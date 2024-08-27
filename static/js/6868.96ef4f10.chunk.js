@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkwater_subsidence=self.webpackChunkwater_subsidence||[]).push([[6868],{56868:(s,e,t)=>{t.r(e),t.d(e,{deleteForwardEdits:()=>a});var i=t(3825),r=t(50076),n=t(54994);async function a(s,e,t,a){if(!e)throw new r.A("post:missing-guid","guid for version is missing");const o=(0,n.Dl)(s),d=t.toJSON(),u=(0,n.jV)(o.query,{query:(0,n.lF)({...d,f:"json"}),...a,method:"post"});e.startsWith("{")&&(e=e.slice(1,-1));const c=`${o.path}/versions/${e}/deleteForwardEdits`,{data:w}=await(0,i.A)(c,u);return w}}}]);
+//# sourceMappingURL=6868.96ef4f10.chunk.js.map

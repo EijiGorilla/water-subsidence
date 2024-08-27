@@ -1,0 +1,2 @@
+/*! For license information please see 5012.c4520098.chunk.js.LICENSE.txt */
+"use strict";(self.webpackChunkwater_subsidence=self.webpackChunkwater_subsidence||[]).push([[5012],{95012:(e,s,c)=>{c.r(s),c.d(s,{CalciteIcon:()=>t,defineCustomElement:()=>u});var n=c(67294);const t=n.I,u=n.d}}]);
