@@ -88,21 +88,24 @@ function App() {
   // Layers toggle
   // SAR Displacement layers
   useEffect(() => {
+    console.log(sarPointlayerSelected);
     sarPointlayerSelected === visible_layer_points[0]
       ? (sar_points_layer.visible = true) &&
         (sar_points_layer.renderer = sar_points_dispmmyr_renderer) &&
         (legend.layerInfos = legend_layerInfos_sar) &&
         (hot_spot_layer.visible = false)
-      : sarPointlayerSelected === visible_layer_points[1]
+      : sarPointlayerSelected === visible_layer_points[2]
         ? (hot_spot_layer.visible = true) &&
           (legend.layerInfos = legend_layerInfos_hotspot) &&
           (sar_points_layer.visible = false)
-        : sarPointlayerSelected === visible_layer_points[2]
+        : sarPointlayerSelected === visible_layer_points[1]
           ? (sar_points_layer.renderer = sar_points_latestdate_renderer) &&
             (sar_points_layer.visible = true) &&
             (legend.layerInfos = legend_layerInfos_sar_latestdate) &&
             (hot_spot_layer.visible = false)
-          : (sar_points_layer.visible = false) && (hot_spot_layer.visible = false);
+          : sarPointlayerSelected === visible_layer_points[3]
+            ? (sar_points_layer.visible = false) || (hot_spot_layer.visible = false)
+            : console.log('failed');
   }, [sarPointlayerSelected]);
 
   // Layer laoded and get clicked point objectid
@@ -156,7 +159,7 @@ function App() {
     // Highlight the clicked point
     setHighlightedFeatureLayer(
       sarPointlayerSelected === visible_layer_points[0] ||
-        sarPointlayerSelected === visible_layer_points[2]
+        sarPointlayerSelected === visible_layer_points[1]
         ? sar_points_layer
         : hot_spot_layer,
     );
@@ -503,21 +506,86 @@ function App() {
           >
             <div id="basemap-container" ref={calcitePanelBasemaps}></div>
           </CalcitePanel>
-
+          {/* https://developers.arcgis.com/javascript/latest/sample-code/visualization-sm-reference-size/ */}
           <CalcitePanel heading="Description" data-panel-id="information" hidden>
-            {nextWidget === 'information' ? (
+            {nextWidget === 'information' && (
               <div className="informationDiv">
-                <ul>
-                  <li>
-                    You can <b>filter the tree data</b> by contract package from the dropdown lists.
-                  </li>
-                  <li>
-                    <b>Click series in pie charts</b> to view its corresponding progress on the map.
-                  </li>
-                </ul>
+                <div
+                  style={{
+                    fontSize: '16px',
+                    color: secondary_color,
+                    marginTop: '10px',
+                    marginLeft: '10px',
+                  }}
+                >
+                  Overview
+                </div>
+                <div>
+                  <img
+                    src="https://EijiGorilla.github.io/Symbols/Land_Subsidence/Overview.svg"
+                    alt="Overview"
+                    height={'100%'}
+                    width={'100%'}
+                    style={{ marginBottom: 'auto' }}
+                  />
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: '16px',
+                      color: secondary_color,
+                      marginTop: '10px',
+                      marginLeft: '10px',
+                    }}
+                  >
+                    Chart:
+                  </div>
+                  <img
+                    src="https://EijiGorilla.github.io/Symbols/Land_Subsidence/Chart_displacement.svg"
+                    alt="Overview"
+                    height={'100%'}
+                    width={'100%'}
+                    style={{ marginBottom: 'auto', marginTop: 'auto' }}
+                  />
+                </div>
+                <div>
+                  <img
+                    src="https://EijiGorilla.github.io/Symbols/Land_Subsidence/Chart_scenario_status_quo.svg"
+                    alt="Overview"
+                    height={'100%'}
+                    width={'100%'}
+                    style={{ marginBottom: 'auto', marginTop: 'auto' }}
+                  />
+                </div>
+                <div>
+                  <img
+                    src="https://EijiGorilla.github.io/Symbols/Land_Subsidence/Chart_scenarios.svg"
+                    alt="Overview"
+                    height={'100%'}
+                    width={'100%'}
+                    style={{ marginBottom: 'auto', marginTop: 'auto' }}
+                  />
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: '16px',
+                      color: secondary_color,
+                      marginTop: '10px',
+                      marginLeft: '10px',
+                    }}
+                  >
+                    Hot Spot Analysis:
+                  </div>
+                  <img
+                    src="https://EijiGorilla.github.io/Symbols/Land_Subsidence/Hot_spot_analysis.svg"
+                    alt="Overview"
+                    height={'100%'}
+                    width={'100%'}
+                    style={{ marginBottom: 'auto', marginTop: 'auto' }}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className="informationDiv" hidden></div>
             )}
           </CalcitePanel>
         </CalciteShellPanel>

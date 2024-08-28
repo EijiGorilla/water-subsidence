@@ -11,6 +11,7 @@ import {
   sar_points_layer,
   admin_boundary_kabupaten,
   admin_boundary_kecamatan,
+  admin_boundary_desa,
 } from './layers';
 
 export const map = new Map({
@@ -22,7 +23,7 @@ const admin_boundary_groupLayer = new GroupLayer({
   title: 'Admin. Boundary Layers',
   visible: true,
   visibilityMode: 'independent',
-  layers: [admin_boundary_kecamatan, admin_boundary_kabupaten],
+  layers: [admin_boundary_desa, admin_boundary_kecamatan, admin_boundary_kabupaten],
 });
 
 // interface Props {
@@ -102,7 +103,9 @@ export const layerList = new LayerList({
       item.open = true;
     }
 
-    item.title === 'Kecamatan' ? (item.visible = false) : (item.visible = true);
+    item.title === 'Kecamatan' || item.title === 'Desa'
+      ? (item.visible = false)
+      : (item.visible = true);
   },
 });
 

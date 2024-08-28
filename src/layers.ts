@@ -105,6 +105,10 @@ export const sar_points_latestdate_renderer = new SimpleRenderer({
 //   content: [contentWidget],
 // });
 
+// Good reference to vary point size by scale
+// https://developers.arcgis.com/javascript/latest/sample-code/visualization-sm-reference-size/
+// We are not doing this, as this affects rendering speed.
+
 export const sar_points_layer = new FeatureLayer({
   portalItem: {
     id: 'f267cd68e2ce4c0b9d38e1b401d8b320',
@@ -112,7 +116,7 @@ export const sar_points_layer = new FeatureLayer({
       url: 'https://gis.railway-sector.com/portal',
     },
   },
-  layerId: 2,
+  layerId: 3,
   minScale: view_minScale,
   maxScale: view_maxScale,
   renderer: sar_points_dispmmyr_renderer,
@@ -152,7 +156,7 @@ export const hot_spot_layer = new FeatureLayer({
       url: 'https://gis.railway-sector.com/portal',
     },
   },
-  layerId: 2,
+  layerId: 3,
   minScale: 80000,
   maxScale: 0,
   popupEnabled: false,
@@ -186,7 +190,7 @@ export const admin_boundary_kabupaten = new FeatureLayer({
       url: 'https://gis.railway-sector.com/portal',
     },
   },
-  layerId: 1,
+  layerId: 0,
   outFields: ['namobj'],
   // When renderer is defined, it does not get highlighted. why?
   // renderer: admin_line_renderer,
@@ -201,10 +205,22 @@ export const admin_boundary_kecamatan = new FeatureLayer({
       url: 'https://gis.railway-sector.com/portal',
     },
   },
-  layerId: 0,
+  layerId: 1,
   popupEnabled: false,
-  renderer: admin_line_renderer,
+  // renderer: admin_line_renderer,
   title: admin_boudnary_layer_title[1],
+});
+
+export const admin_boundary_desa = new FeatureLayer({
+  portalItem: {
+    id: 'f267cd68e2ce4c0b9d38e1b401d8b320',
+    portal: {
+      url: 'https://gis.railway-sector.com/portal',
+    },
+  },
+  layerId: 2,
+  popupEnabled: false,
+  title: admin_boudnary_layer_title[2],
 });
 
 // Scenario feature table

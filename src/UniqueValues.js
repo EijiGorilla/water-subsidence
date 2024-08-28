@@ -1,8 +1,8 @@
 // Visible layers for segmented control
 export const visible_layer_points = [
   'Displ. Rate (mm/yr)',
-  'Hot Spot Analysis',
   'Latest Date (mm)',
+  'Hot Spot Analysis',
   'OFF',
 ];
 export const visible_layer_subdiv = [
@@ -15,7 +15,7 @@ export const visible_layer_subdiv = [
 ];
 
 // Administrative boundary
-export const admin_boudnary_layer_title = ['Kabupaten', 'Kecamatan'];
+export const admin_boudnary_layer_title = ['Kabupaten', 'Kecamatan', 'Desa'];
 
 // SAR Points renderer
 export const view_minScale = 80000;
