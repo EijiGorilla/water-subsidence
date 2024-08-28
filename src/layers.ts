@@ -1,24 +1,14 @@
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import LabelClass from '@arcgis/core/layers/support/LabelClass';
-import ClassBreakRenderer from '@arcgis/core/renderers/ClassBreaksRenderer';
 import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer';
 import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
-import CustomContent from '@arcgis/core/popup/content/CustomContent';
-import PopupTemplate from '@arcgis/core/PopupTemplate';
-import {
-  TextSymbol,
-  SimpleMarkerSymbol,
-  SimpleFillSymbol,
-  SimpleLineSymbol,
-} from '@arcgis/core/symbols';
+import { SimpleMarkerSymbol, SimpleLineSymbol } from '@arcgis/core/symbols';
 import { zoomToLayer } from './Query';
 import {
   admin_boudnary_layer_title,
   color_hotspot,
   label_hotspot,
   latest_date_field,
-  scenario_type_field_name,
   values_hotspot,
   view_maxScale,
   view_minScale,
@@ -175,6 +165,20 @@ hot_spot_layer.listMode = 'hide';
 // hot_spot_layer.popupTemplate = templatePopup;
 
 // Administrative Boundary
+var admin_line_renderer = new SimpleRenderer({
+  symbol: new SimpleLineSymbol({
+    color: '#000000',
+    width: '2.5px',
+  }),
+});
+
+var admin_line_Kecamatan_renderer = new SimpleRenderer({
+  symbol: new SimpleLineSymbol({
+    color: '#ffff00ff',
+    width: '2.5px',
+  }),
+});
+
 export const admin_boundary_kabupaten = new FeatureLayer({
   portalItem: {
     id: 'f267cd68e2ce4c0b9d38e1b401d8b320',
@@ -184,6 +188,8 @@ export const admin_boundary_kabupaten = new FeatureLayer({
   },
   layerId: 1,
   outFields: ['namobj'],
+  // When renderer is defined, it does not get highlighted. why?
+  // renderer: admin_line_renderer,
   popupEnabled: false,
   title: admin_boudnary_layer_title[0],
 });
@@ -197,6 +203,7 @@ export const admin_boundary_kecamatan = new FeatureLayer({
   },
   layerId: 0,
   popupEnabled: false,
+  renderer: admin_line_renderer,
   title: admin_boudnary_layer_title[1],
 });
 

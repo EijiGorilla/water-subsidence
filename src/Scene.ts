@@ -4,18 +4,14 @@ import BasemapGallery from '@arcgis/core/widgets/BasemapGallery';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import Legend from '@arcgis/core/widgets/Legend';
 import Search from '@arcgis/core/widgets/Search';
-import Expand from '@arcgis/core/widgets/Expand';
 import Zoom from '@arcgis/core/widgets/Zoom';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import {
   hot_spot_layer,
   sar_points_layer,
-  sar_points_dispmmyr_renderer,
   admin_boundary_kabupaten,
   admin_boundary_kecamatan,
 } from './layers';
-import * as reactiveUtils from '@arcgis/core/core/reactiveUtils';
-import * as locationRendererCreator from '@arcgis/core/smartMapping/renderers/location';
 
 export const map = new Map({
   basemap: 'satellite', // "streets-night-vector", basemap, hybrid
@@ -29,22 +25,22 @@ const admin_boundary_groupLayer = new GroupLayer({
   layers: [admin_boundary_kecamatan, admin_boundary_kabupaten],
 });
 
-interface Props {
-  color: any;
-  haloOpacity: any;
-  fillOpacity: any;
-}
+// interface Props {
+//   color: any;
+//   haloOpacity: any;
+//   fillOpacity: any;
+// }
 
-const highlightOptions: Props = {
-  color: [255, 255, 0, 1],
-  haloOpacity: 0.9,
-  fillOpacity: 0.2,
-};
+// const highlightOptions: Props = {
+//   color: [255, 255, 0, 1],
+//   haloOpacity: 0.9,
+//   fillOpacity: 0.2,
+// };
 
 export const view = new MapView({
   container: undefined,
   map,
-  center: [106.8244387, -6.3392965],
+  center: [106.8244387, -6.2392965],
   zoom: 11,
   // highlightOptions: highlightOptions,
 });
@@ -59,6 +55,8 @@ map.add(admin_boundary_groupLayer);
 map.add(sar_points_layer);
 map.add(hot_spot_layer);
 
+//-------------------------
+
 // Legend on the map
 // Legend
 export const legend_layerInfos_sar = [
@@ -72,6 +70,13 @@ export const legend_layerInfos_hotspot = [
   {
     layer: hot_spot_layer,
     title: 'Hot Spot Analysis',
+  },
+];
+
+export const legend_layerInfos_sar_latestdate = [
+  {
+    layer: sar_points_layer,
+    title: 'Latest Date (mm)',
   },
 ];
 

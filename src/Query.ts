@@ -1,7 +1,6 @@
 import { sar_points_layer, scenario_table } from './layers';
-import { layerList, view } from './Scene';
+import { view } from './Scene';
 import { date_sar_suffix, dates_sar, point_chart_y_variable } from './UniqueValues';
-import * as reactiveUtils from '@arcgis/core/core/reactiveUtils';
 
 //
 const field_names: any = [];

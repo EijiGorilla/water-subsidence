@@ -3,15 +3,8 @@ import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Responsive from '@amcharts/amcharts5/themes/Responsive';
-import { generateScenarioChartData, getFieldNames, zoomToLayer } from '../Query';
-import { sar_points_layer } from '../layers';
-import {
-  chart_inside_label_color_down_mmyr,
-  chart_inside_label_color_up_mmyr,
-  chart_types_segmented_control,
-  secondary_color,
-} from '../UniqueValues';
-import { PieSeries } from '@amcharts/amcharts5/.internal/charts/pie/PieSeries';
+import { generateScenarioChartData } from '../Query';
+import { chart_div_height, chart_types_segmented_control, secondary_color } from '../UniqueValues';
 // Dispose function
 function maybeDisposeRoot(divId: any) {
   am5.array.each(am5.registry.rootElements, function (root) {
@@ -28,14 +21,12 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
   const yAxisRef = useRef<unknown | any | undefined>({});
   const chartRef = useRef<unknown | any | undefined>({});
   const legendRef = useRef<unknown | any | undefined>({});
-  const [chartData, setChartDataData] = useState([]);
-  const [displMmyrValue, setDisplMmyrValue] = useState<any>();
-  const [yearSelected, setYearSelected] = useState<any>();
+  const [chartData, setChartData] = useState([]);
 
   const chartID = 'lot-progress';
   useEffect(() => {
     generateScenarioChartData(selectedarea, selectedcharttype).then((response: any) => {
-      setChartDataData(response);
+      setChartData(response);
     });
   }, [selectedarea, selectedcharttype]);
 
@@ -69,6 +60,8 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
         wheelX: 'panX',
         wheelY: 'zoomX',
         paddingLeft: 0,
+        // layout: root.horizontalLayout, // this divids up columns into two spaces.
+        // layout: root.verticalLayout,
       }),
     );
     chartRef.current = chart;
@@ -165,6 +158,16 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
       fill: am5.color(secondary_color),
     });
 
+    yAxis.children.unshift(
+      am5.Label.new(root, {
+        rotation: -90,
+        text: '[fontSize: 12.5px]Cumulative Subsidence (mm)[/]',
+        fill: am5.color(secondary_color),
+        y: am5.p50,
+        centerX: am5.p50,
+      }),
+    );
+
     xAxisRef.current = xAxis;
     yAxisRef.current = yAxis;
 
@@ -260,7 +263,8 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
     let legend = chart.children.push(
       am5.Legend.new(root, {
         // centerX: am5.percent(50),
-        x: am5.percent(75),
+        x: am5.percent(70),
+        layout: root.horizontalLayout,
       }),
     );
     legend.data.setAll(chart.series.values);
@@ -302,10 +306,26 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
           marginLeft: '10px',
         }}
       >
+        {/* Add label when the chart is empty */}
+        {chartData.length <= 1 && (
+          <span
+            style={{
+              color: 'white',
+              fontSize: '14px',
+              position: 'absolute',
+              zIndex: '2',
+              top: '40%',
+              left: '10%',
+            }}
+          >
+            Click an admin. boundary (Kabupaten) polygon to show a simulated groundwater
+            displacement chart.
+          </span>
+        )}
         <div
           id={chartID}
           style={{
-            height: '32vh', // default = 32vh
+            height: chart_div_height, // default = 32vh
             width: '100%',
             backgroundColor: '#2b2b2b',
             color: 'white',

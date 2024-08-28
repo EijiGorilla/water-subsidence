@@ -3,9 +3,9 @@ import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Responsive from '@amcharts/amcharts5/themes/Responsive';
-import { generateChartData, getFieldNames, zoomToLayer } from '../Query';
-import { sar_points_layer } from '../layers';
+import { generateChartData } from '../Query';
 import {
+  chart_div_height,
   chart_inside_label_color_down_mmyr,
   chart_inside_label_color_up_mmyr,
   secondary_color,
@@ -24,7 +24,7 @@ const TimeSeriesChart = (props: any) => {
   const xAxisRef = useRef<unknown | any | undefined>({});
   const yAxisRef = useRef<unknown | any | undefined>({});
   const chartRef = useRef<unknown | any | undefined>({});
-  const [chartData, setChartDataData] = useState([]);
+  const [chartData, setChartData] = useState([]);
   const [displMmyrValue, setDisplMmyrValue] = useState<any>();
   const [yearSelected, setYearSelected] = useState<any>();
 
@@ -32,7 +32,7 @@ const TimeSeriesChart = (props: any) => {
 
   useEffect(() => {
     generateChartData(props.selectedid).then((response: any) => {
-      setChartDataData(response[0]);
+      setChartData(response[0]);
       setDisplMmyrValue(response[1]);
     });
   }, [props.selectedid]);
@@ -138,6 +138,8 @@ const TimeSeriesChart = (props: any) => {
 
     var yAxis = chart.yAxes.push(
       am5xy.ValueAxis.new(root, {
+        // extraMax: 0.0005,
+        // max: 0.01,
         renderer: am5xy.AxisRendererY.new(root, {
           minorGridEnabled: false,
           minGridDistance: 40,
@@ -189,7 +191,7 @@ const TimeSeriesChart = (props: any) => {
     // Actual bullet
     series.bullets.push(function () {
       var bulletCircle = am5.Circle.new(root, {
-        radius: 4,
+        radius: 2,
         fill: series.get('fill'),
       });
       return am5.Bullet.new(root, {
@@ -229,7 +231,7 @@ const TimeSeriesChart = (props: any) => {
         <div
           id={chartID}
           style={{
-            height: '32vh',
+            height: chart_div_height,
             width: '100%',
             backgroundColor: '#2b2b2b',
             color: 'white',
@@ -238,6 +240,22 @@ const TimeSeriesChart = (props: any) => {
             marginRight: 'auto',
           }}
         >
+          {/* Add label when the chart is empty */}
+          {!chartData[0] && (
+            <span
+              style={{
+                color: 'white',
+                fontSize: '14px',
+                position: 'absolute',
+                zIndex: '2',
+                top: '40%',
+                left: '10%',
+              }}
+            >
+              (Zoom) and click a point feature to show its land subsidence distribution over time.
+            </span>
+          )}
+
           <span
             style={{
               position: 'absolute',

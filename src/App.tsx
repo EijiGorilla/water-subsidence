@@ -8,12 +8,9 @@ import {
   legend,
   legend_layerInfos_hotspot,
   legend_layerInfos_sar,
+  legend_layerInfos_sar_latestdate,
 } from './Scene';
-import * as esriLang from '@arcgis/core/core/lang';
-import * as colorRendererCreator from '@arcgis/core/smartMapping/renderers/color';
 import FeatureFilter from '@arcgis/core/layers/support/FeatureFilter';
-import histogram from '@arcgis/core/smartMapping/statistics/histogram';
-import ColorSlider from '@arcgis/core/widgets/smartMapping/ColorSlider';
 import './index.css';
 import './App.css';
 import '@esri/calcite-components/dist/components/calcite-shell';
@@ -35,13 +32,12 @@ import {
 import {
   admin_boundary_kabupaten,
   hot_spot_layer,
+  sar_points_dispmmyr_renderer,
   sar_points_latestdate_renderer,
   sar_points_layer,
 } from './layers';
-import { getFieldNames, zoomToLayer } from './Query';
 import TimeSeriesChart from './components/TimeSeriesChart';
 import {
-  visible_layer_subdiv,
   visible_layer_points,
   secondary_color,
   admin_boudnary_layer_title,
@@ -80,9 +76,6 @@ function App() {
 
   // Layers in segmented control item
   const [sarPointlayerSelected, setSarPointLayerSelected] = useState<any>(visible_layer_points[0]);
-  const [adminBoundarylayerSelected, setAdminBoundaryLayerSelected] = useState<any>(
-    visible_layer_subdiv[0],
-  );
 
   // collapsible calcite panel
   const [chartPanelHeight, setChartPanelHeight] = useState<any | undefined>('7%');
@@ -97,6 +90,7 @@ function App() {
   useEffect(() => {
     sarPointlayerSelected === visible_layer_points[0]
       ? (sar_points_layer.visible = true) &&
+        (sar_points_layer.renderer = sar_points_dispmmyr_renderer) &&
         (legend.layerInfos = legend_layerInfos_sar) &&
         (hot_spot_layer.visible = false)
       : sarPointlayerSelected === visible_layer_points[1]
@@ -106,22 +100,10 @@ function App() {
         : sarPointlayerSelected === visible_layer_points[2]
           ? (sar_points_layer.renderer = sar_points_latestdate_renderer) &&
             (sar_points_layer.visible = true) &&
-            (legend.layerInfos = legend_layerInfos_sar) &&
+            (legend.layerInfos = legend_layerInfos_sar_latestdate) &&
             (hot_spot_layer.visible = false)
           : (sar_points_layer.visible = false) && (hot_spot_layer.visible = false);
   }, [sarPointlayerSelected]);
-
-  // Administrative Boundary layers
-  // kabupaten: subdivision
-  // useEffect(() => {
-  //   if (adminBoundarylayerSelected === visible_layer_subdiv[0]) {
-  //     sar_points_layer.definitionExpression = '1=1';
-  //     hot_spot_layer.definitionExpression = '1=1';
-  //   } else {
-  //     sar_points_layer.definitionExpression = "subdiv = '" + adminBoundarylayerSelected + "'";
-  //     hot_spot_layer.definitionExpression = "subdiv = '" + adminBoundarylayerSelected + "'";
-  //   }
-  // }, [adminBoundarylayerSelected]);
 
   // Layer laoded and get clicked point objectid
   useEffect(() => {
@@ -129,7 +111,7 @@ function App() {
       setSarPointLayerLoaded(sar_points_layer.loadStatus);
       // zoomToLayer(sar_points_layer);
 
-      // Get field names to extract date fields
+      // Get field names to extract date fieldsA
       // getFieldNames().then((response: any) => {
       //   setFieldNames(response);
       // });
@@ -172,7 +154,12 @@ function App() {
   // Highlight Hook -------------------------------------------
   useEffect(() => {
     // Highlight the clicked point
-    setHighlightedFeatureLayer(sar_points_layer);
+    setHighlightedFeatureLayer(
+      sarPointlayerSelected === visible_layer_points[0] ||
+        sarPointlayerSelected === visible_layer_points[2]
+        ? sar_points_layer
+        : hot_spot_layer,
+    );
     let highlight: any;
     selectedId &&
       view.whenLayerView(highlightedFeatureLayer).then((layerView: any) => {
@@ -554,32 +541,41 @@ function App() {
           }}
         >
           {/* Choose chart types */}
-          <CalciteSegmentedControl
-            style={{
-              marginTop: '5px',
-              marginBottom: '5px',
-              marginLeft: margin_left_pane_item,
-              marginRight: margin_right_pane_item,
-            }}
-            scale="s"
-            onCalciteSegmentedControlChange={(event: any) => {
-              setChartTypeSelected(event.target.selectedItem.id);
-            }}
-          >
-            {chartTypeSelected &&
-              chart_types_segmented_control.map((chart: any, index: any) => {
-                return (
-                  <CalciteSegmentedControlItem
-                    {...(chartTypeSelected === chart ? { checked: true } : {})}
-                    key={index}
-                    value={chart}
-                    id={chart}
-                  >
-                    {chart}
-                  </CalciteSegmentedControlItem>
-                );
-              })}
-          </CalciteSegmentedControl>
+          <div style={{ display: 'flex' }}>
+            <CalciteSegmentedControl
+              style={{
+                marginTop: '5px',
+                marginBottom: '5px',
+                marginLeft: margin_left_pane_item,
+                marginRight: margin_right_pane_item,
+              }}
+              scale="s"
+              onCalciteSegmentedControlChange={(event: any) => {
+                setChartTypeSelected(event.target.selectedItem.id);
+              }}
+            >
+              {chartTypeSelected &&
+                chart_types_segmented_control.map((chart: any, index: any) => {
+                  return (
+                    <CalciteSegmentedControlItem
+                      {...(chartTypeSelected === chart ? { checked: true } : {})}
+                      key={index}
+                      value={chart}
+                      id={chart}
+                    >
+                      {chart}
+                    </CalciteSegmentedControlItem>
+                  );
+                })}
+            </CalciteSegmentedControl>
+
+            {/* Display a selected admin boundary name only when Scenario charts are chosen. */}
+            {chartTypeSelected !== chart_types_segmented_control[0] && (
+              <span style={{ margin: 'auto' }}>
+                Admin. Boundary: <b style={{ color: '#e8ff00ff' }}>{selectedAreaForScenario}</b>
+              </span>
+            )}
+          </div>
 
           {/* Chart Types */}
           {chartTypeSelected === chart_types_segmented_control[0] && (
