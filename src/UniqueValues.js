@@ -1,10 +1,5 @@
 // Visible layers for segmented control
-export const visible_layer_points = [
-  'Displ. Rate (mm/yr)',
-  'Latest Date (mm)',
-  'Hot Spot Analysis',
-  'OFF',
-];
+export const visible_layer_points = ['Total Displ. (mm)', 'Hot Spot Analysis', 'OFF'];
 export const visible_layer_subdiv = [
   'All',
   'Cempakaputih Barat',
@@ -298,7 +293,7 @@ export const chart_panel_height_collapsed = '7%';
 export const chart_inside_label_color_down_mmyr = 'red';
 export const chart_inside_label_color_up_mmyr = '#0095ffff';
 export const chart_types_segmented_control = [
-  'Displ.(mm)',
+  'Total displ.(mm)',
   'Scenario1 (status quo)',
   'Scenario2',
   'Scenario3',

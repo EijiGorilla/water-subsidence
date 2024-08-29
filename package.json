@@ -1,7 +1,7 @@
 {
   "homepage": "https://eijigorilla.github.io/water-subsidence",
   "name": "water-subsidence",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "dependencies": {
     "@amcharts/amcharts5": "^5.10.1",

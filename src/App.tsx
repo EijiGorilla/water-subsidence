@@ -6,9 +6,8 @@ import {
   basemaps,
   layerList,
   legend,
-  legend_layerInfos_hotspot,
-  legend_layerInfos_sar,
-  legend_layerInfos_sar_latestdate,
+  layerInfos_total,
+  layerInfos_hotspot,
 } from './Scene';
 import FeatureFilter from '@arcgis/core/layers/support/FeatureFilter';
 import './index.css';
@@ -29,13 +28,7 @@ import {
   CalciteSegmentedControl,
   CalciteSegmentedControlItem,
 } from '@esri/calcite-components-react';
-import {
-  admin_boundary_kabupaten,
-  hot_spot_layer,
-  sar_points_dispmmyr_renderer,
-  sar_points_latestdate_renderer,
-  sar_points_layer,
-} from './layers';
+import { admin_boundary_kabupaten, hot_spot_layer, sar_points_layer } from './layers';
 import TimeSeriesChart from './components/TimeSeriesChart';
 import {
   visible_layer_points,
@@ -88,24 +81,17 @@ function App() {
   // Layers toggle
   // SAR Displacement layers
   useEffect(() => {
-    console.log(sarPointlayerSelected);
-    sarPointlayerSelected === visible_layer_points[0]
-      ? (sar_points_layer.visible = true) &&
-        (sar_points_layer.renderer = sar_points_dispmmyr_renderer) &&
-        (legend.layerInfos = legend_layerInfos_sar) &&
-        (hot_spot_layer.visible = false)
-      : sarPointlayerSelected === visible_layer_points[2]
-        ? (hot_spot_layer.visible = true) &&
-          (legend.layerInfos = legend_layerInfos_hotspot) &&
-          (sar_points_layer.visible = false)
-        : sarPointlayerSelected === visible_layer_points[1]
-          ? (sar_points_layer.renderer = sar_points_latestdate_renderer) &&
-            (sar_points_layer.visible = true) &&
-            (legend.layerInfos = legend_layerInfos_sar_latestdate) &&
-            (hot_spot_layer.visible = false)
-          : sarPointlayerSelected === visible_layer_points[3]
-            ? (sar_points_layer.visible = false) || (hot_spot_layer.visible = false)
-            : console.log('failed');
+    sarPointlayerSelected === visible_layer_points[1]
+      ? (hot_spot_layer.visible = true) &&
+        (legend.layerInfos = layerInfos_hotspot) &&
+        (sar_points_layer.visible = false)
+      : sarPointlayerSelected === visible_layer_points[0]
+        ? (sar_points_layer.visible = true) &&
+          (legend.layerInfos = layerInfos_total) &&
+          (hot_spot_layer.visible = false)
+        : sarPointlayerSelected === visible_layer_points[2]
+          ? (sar_points_layer.visible = false) || (hot_spot_layer.visible = false)
+          : console.log('failed');
   }, [sarPointlayerSelected]);
 
   // Layer laoded and get clicked point objectid
@@ -196,74 +182,74 @@ function App() {
   // -------------------------------------------------------------------
 
   // Legend
-  useEffect(() => {
-    // reactiveUtils
-    //   .whenOnce(() => !view.updating)
-    //   .then(() => {
-    //     generateRenderer();
-    //   });
-    // function generateRenderer() {
-    //   // Configure parameters for the color renderer generator
-    //   // the layer must be specified along with a field name
-    //   // or arcade expression. The view and other properties determine
-    //   // the appropriate default color scheme.
-    // const colorParams: any = {
-    //     layer: sar_points_layer,
-    //     valueExpression: '( $feature.dispr_mmyr / $feature.dispr_mmyr ) * 100',
-    //     view: view,
-    //     theme: 'above-and-below',
-    //     outlineOptimizationEnabled: true,
-    //   };
-    //   // Generate a continuous color renderer based on the
-    //   // statistics of the data in the provided layer
-    //   // and field normalized by the normalizationField.
-    //   //
-    //   // This resolves to an object containing several helpful
-    //   // properties, including color scheme, statistics,
-    //   // the renderer and visual variable
-    //   let rendererResult: any;
-    //   colorRendererCreator
-    //     .createContinuousRenderer(colorParams)
-    //     .then((response: any) => {
-    //       // Set the renderer to the layer and add it to the map
-    //       rendererResult = response;
-    //       sar_points_layer.renderer = rendererResult.renderer;
-    //       // Generate a histogram for use in the slider. Input the layer
-    //       // and field or arcade expression to generate it.
-    //       return histogram({
-    //         layer: sar_points_layer,
-    //         valueExpression: colorParams.valueExpression,
-    //         view: view,
-    //         numBins: 70,
-    //       });
-    //     })
-    //     .then((histogramResult: any) => {
-    //       const colorSlider = ColorSlider.fromRendererResult(rendererResult, histogramResult);
-    //       colorSlider.container = 'slider';
-    //       colorSlider.primaryHandleEnabled = true;
-    //       colorSlider.labelFormatFunction = (value: any, type: any) => {
-    //         return value.toFixed(1);
-    //       };
-    //       colorSlider.viewModel.precision = 1;
-    //       view.ui.add('legendDiv', 'bottom-left');
-    //       // When the user slides the handle(s), update the renderer
-    //       // with the updated color visual variable object
-    //       function changeEventHandler() {
-    //         const renderer = rendererResult.renderer;
-    //         // const renderer = sar_points_layer.renderer.clone(); // clone() gives error. why?
-    //         const colorVariable = renderer.visualVariables[0].clone();
-    //         const outlineVariable = renderer.visualVariables[1];
-    //         colorVariable.stops = colorSlider.stops;
-    //         renderer.visualVariables = [colorVariable, outlineVariable];
-    //         sar_points_layer.renderer = renderer;
-    //       }
-    //       // colorSlider.on(
-    //       //   ['thumb-change', 'thumb-drag', 'min-change', 'max-change'],
-    //       //   changeEventHandler,
-    //       // );
-    //     });
-    // }
-  }, []);
+  // useEffect(() => {
+  //   // reactiveUtils
+  //   //   .whenOnce(() => !view.updating)
+  //   //   .then(() => {
+  //   //     generateRenderer();
+  //   //   });
+  //   // function generateRenderer() {
+  //   //   // Configure parameters for the color renderer generator
+  //   //   // the layer must be specified along with a field name
+  //   //   // or arcade expression. The view and other properties determine
+  //   //   // the appropriate default color scheme.
+  //   // const colorParams: any = {
+  //   //     layer: sar_points_layer,
+  //   //     valueExpression: '( $feature.dispr_mmyr / $feature.dispr_mmyr ) * 100',
+  //   //     view: view,
+  //   //     theme: 'above-and-below',
+  //   //     outlineOptimizationEnabled: true,
+  //   //   };
+  //   //   // Generate a continuous color renderer based on the
+  //   //   // statistics of the data in the provided layer
+  //   //   // and field normalized by the normalizationField.
+  //   //   //
+  //   //   // This resolves to an object containing several helpful
+  //   //   // properties, including color scheme, statistics,
+  //   //   // the renderer and visual variable
+  //   //   let rendererResult: any;
+  //   //   colorRendererCreator
+  //   //     .createContinuousRenderer(colorParams)
+  //   //     .then((response: any) => {
+  //   //       // Set the renderer to the layer and add it to the map
+  //   //       rendererResult = response;
+  //   //       sar_points_layer.renderer = rendererResult.renderer;
+  //   //       // Generate a histogram for use in the slider. Input the layer
+  //   //       // and field or arcade expression to generate it.
+  //   //       return histogram({
+  //   //         layer: sar_points_layer,
+  //   //         valueExpression: colorParams.valueExpression,
+  //   //         view: view,
+  //   //         numBins: 70,
+  //   //       });
+  //   //     })
+  //   //     .then((histogramResult: any) => {
+  //   //       const colorSlider = ColorSlider.fromRendererResult(rendererResult, histogramResult);
+  //   //       colorSlider.container = 'slider';
+  //   //       colorSlider.primaryHandleEnabled = true;
+  //   //       colorSlider.labelFormatFunction = (value: any, type: any) => {
+  //   //         return value.toFixed(1);
+  //   //       };
+  //   //       colorSlider.viewModel.precision = 1;
+  //   //       view.ui.add('legendDiv', 'bottom-left');
+  //   //       // When the user slides the handle(s), update the renderer
+  //   //       // with the updated color visual variable object
+  //   //       function changeEventHandler() {
+  //   //         const renderer = rendererResult.renderer;
+  //   //         // const renderer = sar_points_layer.renderer.clone(); // clone() gives error. why?
+  //   //         const colorVariable = renderer.visualVariables[0].clone();
+  //   //         const outlineVariable = renderer.visualVariables[1];
+  //   //         colorVariable.stops = colorSlider.stops;
+  //   //         renderer.visualVariables = [colorVariable, outlineVariable];
+  //   //         sar_points_layer.renderer = renderer;
+  //   //       }
+  //   //       // colorSlider.on(
+  //   //       //   ['thumb-change', 'thumb-drag', 'min-change', 'max-change'],
+  //   //       //   changeEventHandler,
+  //   //       // );
+  //   //     });
+  //   // }
+  // }, []);
 
   // Open LayerList widget when opening a web app
   useEffect(() => {
@@ -303,6 +289,7 @@ function App() {
       layerList.container = layerListDiv.current;
 
       // Legend
+
       legend.container = layerLegendDiv.current;
       view.ui.add(legend, 'bottom-left');
     }
@@ -462,6 +449,7 @@ function App() {
                       key={index}
                       value={layer}
                       id={layer}
+                      style={{ width: '100px' }}
                     >
                       {layer}
                     </CalciteSegmentedControlItem>

@@ -59,25 +59,17 @@ map.add(hot_spot_layer);
 //-------------------------
 
 // Legend on the map
-// Legend
-export const legend_layerInfos_sar = [
+export const layerInfos_total = [
   {
     layer: sar_points_layer,
-    title: 'Displ. Rate (mm/yr)',
+    title: 'Total Displacement (mm)',
   },
 ];
 
-export const legend_layerInfos_hotspot = [
+export const layerInfos_hotspot = [
   {
     layer: hot_spot_layer,
     title: 'Hot Spot Analysis',
-  },
-];
-
-export const legend_layerInfos_sar_latestdate = [
-  {
-    layer: sar_points_layer,
-    title: 'Latest Date (mm)',
   },
 ];
 
@@ -87,7 +79,7 @@ export const legend = new Legend({
   layerInfos: [
     {
       layer: sar_points_layer,
-      title: 'Displ. Rate (mm/yr)',
+      title: 'Total Displacement (mm)',
     },
   ],
 });

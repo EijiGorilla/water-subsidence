@@ -14,44 +14,20 @@ import {
   view_minScale,
 } from './UniqueValues';
 
-export const sar_points_dispmmyr_renderer = new SimpleRenderer({
-  symbol: new SimpleMarkerSymbol({
-    style: 'circle',
-    color: [0, 0, 0],
-    outline: {
-      color: [0, 0, 0, 0],
-      width: 0.5,
-    },
-    size: '6.5px',
+export const visualVariables = [
+  new ColorVariable({
+    field: latest_date_field,
+    stops: [
+      { value: -200, color: '#d7191c', label: '< -200' },
+      { value: -120, color: '#fdae61' },
+      { value: -15, color: '#ffffbf' },
+      { value: 0, color: '#ffffff', label: '0' },
+      { value: 80, color: '#3C9BE6', label: '> 80' },
+    ],
   }),
-  // https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-color-ramps/
-  visualVariables: [
-    new ColorVariable({
-      field: 'DispR_mmyr',
-      stops: [
-        { value: -18, color: '#A2160B' },
-        { value: -16, color: '#B03621' },
-        { value: -14, color: '#BD4E38' },
-        { value: -12, color: '#C9654F' },
-        { value: -10, color: '#D57B67' },
-        { value: -8, color: '#DF9180' },
-        { value: -6, color: '#E9A698' },
-        { value: -4, color: '#F0BCB2' },
-        { value: -2, color: '#FEE7E7' },
-        { value: 0, color: '#E6EECF' },
-        { value: 2, color: '#C9F5FF' },
-        { value: 4, color: '#B0EAFB' },
-        { value: 6, color: '#97DDF7' },
-        { value: 8, color: '#80CFF2' },
-        { value: 10, color: '#68BFEE' },
-        { value: 12, color: '#52AEEA' },
-        { value: 14, color: '#3C9BE6' },
-      ],
-    }),
-  ],
-});
+];
 
-export const sar_points_latestdate_renderer = new SimpleRenderer({
+export const sar_points_renderer = new SimpleRenderer({
   symbol: new SimpleMarkerSymbol({
     style: 'circle',
     color: [0, 0, 0],
@@ -61,31 +37,9 @@ export const sar_points_latestdate_renderer = new SimpleRenderer({
     },
     size: '6.5px',
   }),
+  visualVariables: visualVariables,
+
   // https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-color-ramps/
-  visualVariables: [
-    new ColorVariable({
-      field: latest_date_field,
-      stops: [
-        { value: -18, color: '#A2160B' },
-        { value: -16, color: '#B03621' },
-        { value: -14, color: '#BD4E38' },
-        { value: -12, color: '#C9654F' },
-        { value: -10, color: '#D57B67' },
-        { value: -8, color: '#DF9180' },
-        { value: -6, color: '#E9A698' },
-        { value: -4, color: '#F0BCB2' },
-        { value: -2, color: '#FEE7E7' },
-        { value: 0, color: '#E6EECF' },
-        { value: 2, color: '#C9F5FF' },
-        { value: 4, color: '#B0EAFB' },
-        { value: 6, color: '#97DDF7' },
-        { value: 8, color: '#80CFF2' },
-        { value: 10, color: '#68BFEE' },
-        { value: 12, color: '#52AEEA' },
-        { value: 14, color: '#3C9BE6' },
-      ],
-    }),
-  ],
 });
 
 // custom popup
@@ -119,7 +73,7 @@ export const sar_points_layer = new FeatureLayer({
   layerId: 3,
   minScale: view_minScale,
   maxScale: view_maxScale,
-  renderer: sar_points_dispmmyr_renderer,
+  renderer: sar_points_renderer,
   popupEnabled: false,
   title: 'Land Displacement',
 });
@@ -144,7 +98,7 @@ const uniqueValueInfos_hotspot = values_hotspot.map((value: any, index: any) => 
   });
 });
 
-const hot_spot_renderer = new UniqueValueRenderer({
+export const hot_spot_renderer = new UniqueValueRenderer({
   field: 'gi_bin',
   uniqueValueInfos: uniqueValueInfos_hotspot,
 });
