@@ -3,6 +3,7 @@ import { view } from './Scene';
 import { date_sar_suffix, dates_sar, point_chart_y_variable } from './UniqueValues';
 
 //
+//
 const field_names: any = [];
 export async function getFieldNames() {
   if (sar_points_layer.loadStatus === 'loaded') {

@@ -1,3 +1,55 @@
+// Date Picker
+export const monthList = [
+  {
+    value: 1,
+    month: 'Jan.',
+  },
+  {
+    value: 2,
+    month: 'Feb.',
+  },
+  {
+    value: 3,
+    month: 'Mar.',
+  },
+  {
+    value: 4,
+    month: 'Apr.',
+  },
+  {
+    value: 5,
+    month: 'May',
+  },
+  {
+    value: 6,
+    month: 'Jun.',
+  },
+  {
+    value: 7,
+    month: 'Jul.',
+  },
+  {
+    value: 8,
+    month: 'Aug.',
+  },
+  {
+    value: 9,
+    month: 'Sep.',
+  },
+  {
+    value: 10,
+    month: 'Oct.',
+  },
+  {
+    value: 11,
+    month: 'Nov.',
+  },
+  {
+    value: 12,
+    month: 'Dec.',
+  },
+];
+
 // Visible layers for segmented control
 export const visible_layer_points = ['Total Displ. (mm)', 'Hot Spot Analysis', 'OFF'];
 export const visible_layer_subdiv = [
@@ -40,6 +92,7 @@ export const label_hotspot = [
 ];
 
 // Time series char filter
+export const years_dropdown = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
 export const latest_date_field = 'x20231224';
 export const date_sar_suffix = 'x';
 export const dates_sar = [

@@ -12,14 +12,20 @@ import {
 import FeatureFilter from '@arcgis/core/layers/support/FeatureFilter';
 import './index.css';
 import './App.css';
+import '@esri/calcite-components/dist/components/calcite-alert';
 import '@esri/calcite-components/dist/components/calcite-shell';
 import '@esri/calcite-components/dist/components/calcite-shell-panel';
+import '@esri/calcite-components/dist/components/calcite-dropdown';
+import '@esri/calcite-components/dist/components/calcite-dropdown-group';
+import '@esri/calcite-components/dist/components/calcite-dropdown-item';
+import '@esri/calcite-components/dist/components/calcite-button';
 import '@esri/calcite-components/dist/components/calcite-action';
 import '@esri/calcite-components/dist/components/calcite-action-bar';
 import '@esri/calcite-components/dist/components/calcite-segmented-control';
 import '@esri/calcite-components/dist/components/calcite-segmented-control-item';
 import '@esri/calcite-components/dist/calcite/calcite.css';
 import {
+  CalciteAlert,
   CalciteShell,
   CalciteShellPanel,
   CalciteActionBar,
@@ -27,6 +33,10 @@ import {
   CalcitePanel,
   CalciteSegmentedControl,
   CalciteSegmentedControlItem,
+  CalciteDropdown,
+  CalciteDropdownGroup,
+  CalciteDropdownItem,
+  CalciteButton,
 } from '@esri/calcite-components-react';
 import { admin_boundary_kabupaten, hot_spot_layer, sar_points_layer } from './layers';
 import TimeSeriesChart from './components/TimeSeriesChart';
@@ -42,6 +52,9 @@ import {
   chart_types_segmented_control,
   chart_panel_height_collapsed,
   chart_panel_height_default,
+  years_dropdown,
+  dates_sar,
+  monthList,
 } from './UniqueValues';
 import ScenarioChart from './components/ScenarioChart';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
@@ -64,6 +77,18 @@ function App() {
     null,
   );
 
+  // Date picker
+  const [startYear, setStartYear] = useState<any>('2015');
+  const [startMonth, setStartMonth] = useState<any>('4');
+  const [startDay, setStartDay] = useState<any>('10');
+  const [endYear, setEndYear] = useState<any>('2023');
+  const [endMonth, setEndMonth] = useState<any>('12');
+  const [endDay, setEndDay] = useState<any>('24');
+
+  const [startYearsForFilter, setStartYearsForFilter] = useState<any>();
+  const [endYearsForFilter, setEndYearsForFilter] = useState<any>();
+  const [concatDatesForFilter, setConcatDatesForFilter] = useState<any>();
+
   const [sarPointLayerLoaded, setSarPointLayerLoaded] = useState<any>();
   const [fieldNames, setFieldNames] = useState<any>();
 
@@ -77,6 +102,62 @@ function App() {
   // highlighted feature
   const [highlightedFeatureLayer, setHighlightedFeatureLayer] =
     useState<FeatureLayer>(sar_points_layer);
+
+  // Date Picker ---------------------------------
+  useEffect(() => {
+    // Error message is closed as default.
+    const date_picker_div = document.querySelector(
+      `[id="error_message_datepicker"]`,
+    ) as HTMLCalcitePanelElement;
+    date_picker_div.hidden = true;
+
+    // When a wrong end year is chosen, the error message pops up.
+    if (Number(endYear) < Number(startYear)) {
+      date_picker_div.hidden = false;
+      setEndYear(null);
+      setEndMonth(null);
+      setEndDay(null);
+    }
+
+    if (startYear) {
+      // identify the first date of the selected year from the date fields array
+      const first_dates_x = dates_sar.filter((elem: any) => elem.includes(startYear));
+      setStartYearsForFilter(first_dates_x);
+
+      // remove 'x'
+      const first_date = first_dates_x[0].substring(1);
+
+      // get year, month, date
+      const month = Number(first_date.substring(4, 6));
+      setStartDay(first_date.substring(6, 8));
+
+      const find = monthList.find((elem: any) => elem.value === month);
+      setStartMonth(find?.month);
+    }
+
+    if (endYear) {
+      // identify the last date of the selected year from the date fields array
+      const last_dates_x = dates_sar.filter((elem: any) => elem.includes(endYear));
+      setEndYearsForFilter(last_dates_x);
+
+      // remove 'x'
+      const last_date = last_dates_x.slice(-1)[0].substring(1);
+
+      // // get year, month, date
+      const month = Number(last_date.substring(4, 6));
+      setEndDay(last_date.substring(6, 8));
+
+      const find = monthList.find((elem: any) => elem.value === month);
+      setEndMonth(find?.month);
+    }
+
+    console.log(startYearsForFilter);
+    console.log(endYearsForFilter);
+    // setConcatDatesForFilter(startYearsForFilter.concat(endYearsForFilter));
+
+    // concat both years for filtering layer and chart
+  }, [startYear, endYear]);
+  // ---------------------------------------------
   // --------------------------------------------------------------------------------- //
   // Layers toggle
   // SAR Displacement layers
@@ -320,19 +401,6 @@ function App() {
   return (
     <div>
       <CalciteShell>
-        {/* <header
-          slot="header"
-          id="header-title"
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '55px',
-            padding: '0.5rem 0.2rem 0.5rem 1rem',
-            borderStyle: 'solid',
-            borderWidth: 1,
-          }}
-        ></header> */}
-
         <CalciteShellPanel
           width-scale="1"
           slot="panel-start"
@@ -397,7 +465,70 @@ function App() {
               Time Period:
             </div>
             <div style={{ fontSize: '20px', marginLeft: 'auto', marginRight: 'auto' }}>
-              Apr.10, 2015 - Dec.10, 2023
+              {/* Date Picker */}
+              <div style={{ marginBottom: '10px' }}>
+                <CalciteDropdown widthScale="m" style={{ marginRight: '35%' }}>
+                  <CalciteButton slot="trigger">Start Year</CalciteButton>
+                  <CalciteDropdownGroup group-title="">
+                    {years_dropdown &&
+                      years_dropdown.map((year: any, index: any) => {
+                        return (
+                          <CalciteDropdownItem
+                            key={index}
+                            id={year}
+                            onCalciteDropdownItemSelect={(event: any) =>
+                              setStartYear(event.target.id)
+                            }
+                          >
+                            {year}
+                          </CalciteDropdownItem>
+                        );
+                      })}
+                  </CalciteDropdownGroup>
+                </CalciteDropdown>
+                <CalciteDropdown widthScale="m">
+                  <CalciteButton slot="trigger">End Year</CalciteButton>
+                  <CalciteDropdownGroup group-title="">
+                    {years_dropdown &&
+                      years_dropdown.map((year: any, index: any) => {
+                        return (
+                          <CalciteDropdownItem
+                            key={index}
+                            id={year}
+                            onCalciteDropdownItemSelect={(event: any) =>
+                              setEndYear(event.target.id)
+                            }
+                          >
+                            {year}
+                          </CalciteDropdownItem>
+                        );
+                      })}
+                  </CalciteDropdownGroup>
+                </CalciteDropdown>
+              </div>
+              {!endYear ? (
+                <div>
+                  {' '}
+                  {startMonth}
+                  {startDay}, {startYear} -{' '}
+                  <span style={{ color: 'rgb(0,0,0,0)' }}>---------------------</span>
+                </div>
+              ) : (
+                <div>
+                  {startMonth}
+                  {startDay}, {startYear} - {endMonth}
+                  {endDay}, {endYear}
+                </div>
+              )}
+
+              <div id="error_message_datepicker">
+                <CalciteAlert icon="x-octagon-f" kind="brand" open label="A report alert">
+                  <div slot="title" style={{ color: 'red' }}>
+                    Error!{' '}
+                  </div>
+                  <div slot="message">You entered the wrong end year.</div>
+                </CalciteAlert>
+              </div>
             </div>
 
             {/* Layers */}
