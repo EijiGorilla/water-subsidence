@@ -87,10 +87,9 @@ export async function updateRendererForSymbology(last_date: any) {
   query.where = "dates = '" + last_date + "'";
   query.outFields = ['dates', 'max', 'q1', 'min'];
   const response = await iqr_table.queryFeatures(query);
-  console.log('queryFeatures');
   var attributes = response.features[0].attributes;
   // const max = attributes['max'];
-  const max = Math.ceil(attributes['max'] * 2);
+  const max = Math.ceil(attributes['max'] * 0.8);
   const q1 = attributes['q1'];
   const min = Math.ceil(q1 * 2);
 

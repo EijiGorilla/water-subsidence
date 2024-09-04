@@ -79,14 +79,7 @@ function App() {
 
   // Date picker
   const [startYear, setStartYear] = useState<any>('2015');
-  const [startMonth, setStartMonth] = useState<any>('4');
-  const [startDay, setStartDay] = useState<any>('10');
   const [endYear, setEndYear] = useState<any>('2023');
-  const [endMonth, setEndMonth] = useState<any>('12');
-  const [endDay, setEndDay] = useState<any>('24');
-
-  const [startYearsForFilter, setStartYearsForFilter] = useState<any>();
-  const [endYearsForFilter, setEndYearsForFilter] = useState<any>();
   const [newDatesForChart, setNewDatesForChart] = useState<any>(dates_sar);
 
   const [sarPointLayerLoaded, setSarPointLayerLoaded] = useState<any>();
@@ -99,32 +92,24 @@ function App() {
   const [chartPanelHeight, setChartPanelHeight] = useState<any | undefined>('7%');
   const [chartTypeSelected, setChartTypeSelected] = useState<any>(chart_types_segmented_control[0]);
 
+  // Dropdown for end years
+  const [startYearsDropdown, setStartYearsDropdown] = useState<any>(years_dropdown);
+  const [endYearsDropdown, setEndYearsDropdown] = useState<any>(years_dropdown);
+
   // highlighted feature
   const [highlightedFeatureLayer, setHighlightedFeatureLayer] =
     useState<FeatureLayer>(sar_points_layer);
 
   // Date Picker ---------------------------------
   useEffect(() => {
-    // Error message is closed as default.
-    const date_picker_div = document.querySelector(
-      `[id="error_message_datepicker"]`,
-    ) as HTMLCalcitePanelElement;
-    date_picker_div.hidden = true;
-
-    // When a wrong end year is chosen, the error message pops up.
-    if (Number(endYear) < Number(startYear)) {
-      date_picker_div.hidden = false;
-      setEndYear(null);
-      setEndMonth(null);
-      setEndDay(null);
-    }
+    // update end years list in dropdown list
+    setEndYearsDropdown(years_dropdown.filter((elem: any) => elem >= startYear));
+    setStartYearsDropdown(years_dropdown.filter((elem: any) => elem <= endYear));
 
     // identify the first date of the selected year from the date fields array
     // make sure to add 'x' to correctly filter by year
     const first_dates_x = dates_sar.filter((elem: any) => elem.includes('x'.concat(startYear)));
     const last_dates_x = dates_sar.filter((elem: any) => elem.includes('x'.concat(endYear)));
-    // console.log(first_dates_x[0]);
-    // console.log(last_dates_x[last_dates_x.length - 1]);
     const last_date = last_dates_x[last_dates_x.length - 1];
 
     // Get an index of the first and end date
@@ -136,40 +121,6 @@ function App() {
     updateRendererForSymbology(last_date).then((response: any) => {
       sar_points_layer.renderer = response;
     });
-
-    // setStartYearsForFilter(first_dates_x);
-
-    // remove 'x'
-    // const first_date = first_dates_x[0].substring(1);
-
-    // // get year, month, date
-    // const month = Number(first_date.substring(4, 6));
-    // setStartDay(first_date.substring(6, 8));
-
-    // const find = monthList.find((elem: any) => elem.value === month);
-    // setStartMonth(find?.month);
-
-    // if (endYear) {
-    //   // identify the last date of the selected year from the date fields array
-    //   const last_dates_x = dates_sar.filter((elem: any) => elem.includes(endYear));
-    //   setEndYearsForFilter(last_dates_x);
-
-    //   // // remove 'x'
-    //   // const last_date = last_dates_x.slice(-1)[0].substring(1);
-
-    //   // // // get year, month, date
-    //   // const month = Number(last_date.substring(4, 6));
-    //   // setEndDay(last_date.substring(6, 8));
-
-    //   // const find = monthList.find((elem: any) => elem.value === month);
-    //   // setEndMonth(find?.month);
-    // }
-
-    // console.log(startYearsForFilter);
-    // console.log(endYearsForFilter);
-    // setConcatDatesForFilter(startYearsForFilter.concat(endYearsForFilter));
-
-    // concat both years for filtering layer and chart
   }, [startYear, endYear]);
   // ---------------------------------------------
   // --------------------------------------------------------------------------------- //
@@ -275,76 +226,6 @@ function App() {
       });
   }, [selectedIdKabupaten]);
   // -------------------------------------------------------------------
-
-  // Legend
-  // useEffect(() => {
-  //   // reactiveUtils
-  //   //   .whenOnce(() => !view.updating)
-  //   //   .then(() => {
-  //   //     generateRenderer();
-  //   //   });
-  //   // function generateRenderer() {
-  //   //   // Configure parameters for the color renderer generator
-  //   //   // the layer must be specified along with a field name
-  //   //   // or arcade expression. The view and other properties determine
-  //   //   // the appropriate default color scheme.
-  //   // const colorParams: any = {
-  //   //     layer: sar_points_layer,
-  //   //     valueExpression: '( $feature.dispr_mmyr / $feature.dispr_mmyr ) * 100',
-  //   //     view: view,
-  //   //     theme: 'above-and-below',
-  //   //     outlineOptimizationEnabled: true,
-  //   //   };
-  //   //   // Generate a continuous color renderer based on the
-  //   //   // statistics of the data in the provided layer
-  //   //   // and field normalized by the normalizationField.
-  //   //   //
-  //   //   // This resolves to an object containing several helpful
-  //   //   // properties, including color scheme, statistics,
-  //   //   // the renderer and visual variable
-  //   //   let rendererResult: any;
-  //   //   colorRendererCreator
-  //   //     .createContinuousRenderer(colorParams)
-  //   //     .then((response: any) => {
-  //   //       // Set the renderer to the layer and add it to the map
-  //   //       rendererResult = response;
-  //   //       sar_points_layer.renderer = rendererResult.renderer;
-  //   //       // Generate a histogram for use in the slider. Input the layer
-  //   //       // and field or arcade expression to generate it.
-  //   //       return histogram({
-  //   //         layer: sar_points_layer,
-  //   //         valueExpression: colorParams.valueExpression,
-  //   //         view: view,
-  //   //         numBins: 70,
-  //   //       });
-  //   //     })
-  //   //     .then((histogramResult: any) => {
-  //   //       const colorSlider = ColorSlider.fromRendererResult(rendererResult, histogramResult);
-  //   //       colorSlider.container = 'slider';
-  //   //       colorSlider.primaryHandleEnabled = true;
-  //   //       colorSlider.labelFormatFunction = (value: any, type: any) => {
-  //   //         return value.toFixed(1);
-  //   //       };
-  //   //       colorSlider.viewModel.precision = 1;
-  //   //       view.ui.add('legendDiv', 'bottom-left');
-  //   //       // When the user slides the handle(s), update the renderer
-  //   //       // with the updated color visual variable object
-  //   //       function changeEventHandler() {
-  //   //         const renderer = rendererResult.renderer;
-  //   //         // const renderer = sar_points_layer.renderer.clone(); // clone() gives error. why?
-  //   //         const colorVariable = renderer.visualVariables[0].clone();
-  //   //         const outlineVariable = renderer.visualVariables[1];
-  //   //         colorVariable.stops = colorSlider.stops;
-  //   //         renderer.visualVariables = [colorVariable, outlineVariable];
-  //   //         sar_points_layer.renderer = renderer;
-  //   //       }
-  //   //       // colorSlider.on(
-  //   //       //   ['thumb-change', 'thumb-drag', 'min-change', 'max-change'],
-  //   //       //   changeEventHandler,
-  //   //       // );
-  //   //     });
-  //   // }
-  // }, []);
 
   // Open LayerList widget when opening a web app
   useEffect(() => {
@@ -493,8 +374,8 @@ function App() {
                   Start Year
                 </CalciteButton>
                 <CalciteDropdownGroup group-title="">
-                  {years_dropdown &&
-                    years_dropdown.map((year: any, index: any) => {
+                  {startYearsDropdown &&
+                    startYearsDropdown.map((year: any, index: any) => {
                       return (
                         <CalciteDropdownItem
                           key={index}
@@ -517,8 +398,8 @@ function App() {
                   End Year
                 </CalciteButton>
                 <CalciteDropdownGroup group-title="">
-                  {years_dropdown &&
-                    years_dropdown.map((year: any, index: any) => {
+                  {endYearsDropdown &&
+                    endYearsDropdown.map((year: any, index: any) => {
                       return (
                         <CalciteDropdownItem
                           key={index}
@@ -531,15 +412,6 @@ function App() {
                     })}
                 </CalciteDropdownGroup>
               </CalciteDropdown>
-            </div>
-
-            <div id="error_message_datepicker">
-              <CalciteAlert icon="x-octagon-f" kind="brand" open label="A report alert">
-                <div slot="title" style={{ color: 'red' }}>
-                  Error!{' '}
-                </div>
-                <div slot="message">You entered the wrong end year.</div>
-              </CalciteAlert>
             </div>
 
             {/* Layers */}
