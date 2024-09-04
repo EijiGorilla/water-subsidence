@@ -54,10 +54,10 @@ import {
   chart_panel_height_default,
   years_dropdown,
   dates_sar,
-  monthList,
 } from './UniqueValues';
 import ScenarioChart from './components/ScenarioChart';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import { updateRendererForSymbology } from './Query';
 
 function App() {
   const [asOfDate, setAsOfDate] = useState<undefined | any | unknown>(null);
@@ -87,7 +87,7 @@ function App() {
 
   const [startYearsForFilter, setStartYearsForFilter] = useState<any>();
   const [endYearsForFilter, setEndYearsForFilter] = useState<any>();
-  const [concatDatesForFilter, setConcatDatesForFilter] = useState<any>();
+  const [newDatesForChart, setNewDatesForChart] = useState<any>(dates_sar);
 
   const [sarPointLayerLoaded, setSarPointLayerLoaded] = useState<any>();
   const [fieldNames, setFieldNames] = useState<any>();
@@ -119,40 +119,54 @@ function App() {
       setEndDay(null);
     }
 
-    if (startYear) {
-      // identify the first date of the selected year from the date fields array
-      const first_dates_x = dates_sar.filter((elem: any) => elem.includes(startYear));
-      setStartYearsForFilter(first_dates_x);
+    // identify the first date of the selected year from the date fields array
+    // make sure to add 'x' to correctly filter by year
+    const first_dates_x = dates_sar.filter((elem: any) => elem.includes('x'.concat(startYear)));
+    const last_dates_x = dates_sar.filter((elem: any) => elem.includes('x'.concat(endYear)));
+    // console.log(first_dates_x[0]);
+    // console.log(last_dates_x[last_dates_x.length - 1]);
+    const last_date = last_dates_x[last_dates_x.length - 1];
 
-      // remove 'x'
-      const first_date = first_dates_x[0].substring(1);
+    // Get an index of the first and end date
+    const first_date_index = dates_sar.indexOf(first_dates_x[0]);
+    const end_date_index = dates_sar.indexOf(last_date);
+    setNewDatesForChart(dates_sar.slice(first_date_index, end_date_index + 1));
 
-      // get year, month, date
-      const month = Number(first_date.substring(4, 6));
-      setStartDay(first_date.substring(6, 8));
+    // Sar point color ramps
+    updateRendererForSymbology(last_date).then((response: any) => {
+      sar_points_layer.renderer = response;
+    });
 
-      const find = monthList.find((elem: any) => elem.value === month);
-      setStartMonth(find?.month);
-    }
+    // setStartYearsForFilter(first_dates_x);
 
-    if (endYear) {
-      // identify the last date of the selected year from the date fields array
-      const last_dates_x = dates_sar.filter((elem: any) => elem.includes(endYear));
-      setEndYearsForFilter(last_dates_x);
+    // remove 'x'
+    // const first_date = first_dates_x[0].substring(1);
 
-      // remove 'x'
-      const last_date = last_dates_x.slice(-1)[0].substring(1);
+    // // get year, month, date
+    // const month = Number(first_date.substring(4, 6));
+    // setStartDay(first_date.substring(6, 8));
 
-      // // get year, month, date
-      const month = Number(last_date.substring(4, 6));
-      setEndDay(last_date.substring(6, 8));
+    // const find = monthList.find((elem: any) => elem.value === month);
+    // setStartMonth(find?.month);
 
-      const find = monthList.find((elem: any) => elem.value === month);
-      setEndMonth(find?.month);
-    }
+    // if (endYear) {
+    //   // identify the last date of the selected year from the date fields array
+    //   const last_dates_x = dates_sar.filter((elem: any) => elem.includes(endYear));
+    //   setEndYearsForFilter(last_dates_x);
 
-    console.log(startYearsForFilter);
-    console.log(endYearsForFilter);
+    //   // // remove 'x'
+    //   // const last_date = last_dates_x.slice(-1)[0].substring(1);
+
+    //   // // // get year, month, date
+    //   // const month = Number(last_date.substring(4, 6));
+    //   // setEndDay(last_date.substring(6, 8));
+
+    //   // const find = monthList.find((elem: any) => elem.value === month);
+    //   // setEndMonth(find?.month);
+    // }
+
+    // console.log(startYearsForFilter);
+    // console.log(endYearsForFilter);
     // setConcatDatesForFilter(startYearsForFilter.concat(endYearsForFilter));
 
     // concat both years for filtering layer and chart
@@ -464,71 +478,68 @@ function App() {
             >
               Time Period:
             </div>
-            <div style={{ fontSize: '20px', marginLeft: 'auto', marginRight: 'auto' }}>
-              {/* Date Picker */}
-              <div style={{ marginBottom: '10px' }}>
-                <CalciteDropdown widthScale="m" style={{ marginRight: '35%' }}>
-                  <CalciteButton slot="trigger">Start Year</CalciteButton>
-                  <CalciteDropdownGroup group-title="">
-                    {years_dropdown &&
-                      years_dropdown.map((year: any, index: any) => {
-                        return (
-                          <CalciteDropdownItem
-                            key={index}
-                            id={year}
-                            onCalciteDropdownItemSelect={(event: any) =>
-                              setStartYear(event.target.id)
-                            }
-                          >
-                            {year}
-                          </CalciteDropdownItem>
-                        );
-                      })}
-                  </CalciteDropdownGroup>
-                </CalciteDropdown>
-                <CalciteDropdown widthScale="m">
-                  <CalciteButton slot="trigger">End Year</CalciteButton>
-                  <CalciteDropdownGroup group-title="">
-                    {years_dropdown &&
-                      years_dropdown.map((year: any, index: any) => {
-                        return (
-                          <CalciteDropdownItem
-                            key={index}
-                            id={year}
-                            onCalciteDropdownItemSelect={(event: any) =>
-                              setEndYear(event.target.id)
-                            }
-                          >
-                            {year}
-                          </CalciteDropdownItem>
-                        );
-                      })}
-                  </CalciteDropdownGroup>
-                </CalciteDropdown>
-              </div>
-              {!endYear ? (
-                <div>
-                  {' '}
-                  {startMonth}
-                  {startDay}, {startYear} -{' '}
-                  <span style={{ color: 'rgb(0,0,0,0)' }}>---------------------</span>
-                </div>
-              ) : (
-                <div>
-                  {startMonth}
-                  {startDay}, {startYear} - {endMonth}
-                  {endDay}, {endYear}
-                </div>
-              )}
 
-              <div id="error_message_datepicker">
-                <CalciteAlert icon="x-octagon-f" kind="brand" open label="A report alert">
-                  <div slot="title" style={{ color: 'red' }}>
-                    Error!{' '}
-                  </div>
-                  <div slot="message">You entered the wrong end year.</div>
-                </CalciteAlert>
-              </div>
+            {/* Date Picker */}
+            <div
+              style={{
+                display: 'flex',
+                fontSize: '20px',
+                marginLeft: '25px',
+                marginRight: 'auto',
+              }}
+            >
+              <CalciteDropdown widthScale="m" style={{ marginRight: '4%' }}>
+                <CalciteButton slot="trigger" kind="inverse" scale="s">
+                  Start Year
+                </CalciteButton>
+                <CalciteDropdownGroup group-title="">
+                  {years_dropdown &&
+                    years_dropdown.map((year: any, index: any) => {
+                      return (
+                        <CalciteDropdownItem
+                          key={index}
+                          id={year}
+                          onCalciteDropdownItemSelect={(event: any) =>
+                            setStartYear(event.target.id)
+                          }
+                        >
+                          {year}
+                        </CalciteDropdownItem>
+                      );
+                    })}
+                </CalciteDropdownGroup>
+              </CalciteDropdown>
+              {startYear}
+              <div style={{ marginLeft: '3%', marginRight: '3%' }}>{'-'}</div>
+              {endYear}
+              <CalciteDropdown widthScale="m" style={{ marginLeft: '4%' }}>
+                <CalciteButton slot="trigger" kind="inverse" scale="s">
+                  End Year
+                </CalciteButton>
+                <CalciteDropdownGroup group-title="">
+                  {years_dropdown &&
+                    years_dropdown.map((year: any, index: any) => {
+                      return (
+                        <CalciteDropdownItem
+                          key={index}
+                          id={year}
+                          onCalciteDropdownItemSelect={(event: any) => setEndYear(event.target.id)}
+                        >
+                          {year}
+                        </CalciteDropdownItem>
+                      );
+                    })}
+                </CalciteDropdownGroup>
+              </CalciteDropdown>
+            </div>
+
+            <div id="error_message_datepicker">
+              <CalciteAlert icon="x-octagon-f" kind="brand" open label="A report alert">
+                <div slot="title" style={{ color: 'red' }}>
+                  Error!{' '}
+                </div>
+                <div slot="message">You entered the wrong end year.</div>
+              </CalciteAlert>
             </div>
 
             {/* Layers */}
@@ -769,6 +780,7 @@ function App() {
             <TimeSeriesChart
               // nextwidget={nextWidget === activeWidget ? null : nextWidget}
               selectedid={selectedId}
+              newdates={newDatesForChart}
             />
           )}
 

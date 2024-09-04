@@ -1,6 +1,9 @@
-import { sar_points_layer, scenario_table } from './layers';
+import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
+import { iqr_table, sar_points_layer, scenario_table } from './layers';
 import { view } from './Scene';
-import { date_sar_suffix, dates_sar, point_chart_y_variable } from './UniqueValues';
+import { date_sar_suffix, point_chart_y_variable, point_color } from './UniqueValues';
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
 
 //
 //
@@ -52,13 +55,13 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
 }
 
 // Create data for time-series chart when a specific id is selected
-export async function generateChartData(selectedid: any) {
+export async function generateChartData(selectedid: any, newdates: any) {
   if (selectedid) {
     const query = sar_points_layer.createQuery();
     query.where = 'objectid = ' + selectedid;
     return sar_points_layer.queryFeatures(query).then((results: any) => {
       var stats = results.features[0].attributes;
-      const map = dates_sar.map((date: any, index: any) => {
+      const map = newdates.map((date: any, index: any) => {
         const dateString = date.replace(date_sar_suffix, '');
         const year = dateString.substring(0, 4);
         const month = dateString.substring(4, 6);
@@ -67,10 +70,9 @@ export async function generateChartData(selectedid: any) {
         date_n.setHours(0, 0, 0, 0);
         return Object.assign({
           date: date_n.getTime(), //date.replace('f', ''),
-          value: stats[dates_sar[index]],
+          value: stats[newdates[index]],
         });
       });
-
       const displ_mmyr = stats[point_chart_y_variable];
       return [map, displ_mmyr];
     });
@@ -78,6 +80,54 @@ export async function generateChartData(selectedid: any) {
     const default_data = [{}];
     return default_data;
   }
+}
+
+export async function updateRendererForSymbology(last_date: any) {
+  const query = iqr_table.createQuery();
+  query.where = "dates = '" + last_date + "'";
+  query.outFields = ['dates', 'max', 'q1', 'min'];
+  const response = await iqr_table.queryFeatures(query);
+  console.log('queryFeatures');
+  var attributes = response.features[0].attributes;
+  // const max = attributes['max'];
+  const max = Math.ceil(attributes['max'] * 2);
+  const q1 = attributes['q1'];
+  const min = Math.ceil(q1 * 2);
+
+  // object array for visualVariables
+  const values = [min, q1, q1 / 3, 0, max];
+  const stops = values.map((value: any, index: any) => {
+    return Object.assign({
+      value: value,
+      color: point_color[index],
+      label:
+        index === 0 ? '< ' + value.toString() : index === 3 ? '0' : index === 4 ? '> ' + max : '',
+    });
+  });
+
+  const new_visualVariable = [
+    new ColorVariable({
+      field: last_date,
+      stops: stops,
+    }),
+  ];
+
+  const new_point_renderer = new SimpleRenderer({
+    symbol: new SimpleMarkerSymbol({
+      style: 'circle',
+      color: [0, 0, 0],
+      outline: {
+        color: [0, 0, 0, 0],
+        width: 0.5,
+      },
+      size: '6.5px',
+    }),
+    visualVariables: new_visualVariable,
+
+    // https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-color-ramps/
+  });
+
+  return new_point_renderer;
 }
 
 export function zoomToLayer(layer: any) {

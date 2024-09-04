@@ -1,3 +1,7 @@
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
+import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+
 // Date Picker
 export const monthList = [
   {
@@ -63,33 +67,6 @@ export const visible_layer_subdiv = [
 
 // Administrative boundary
 export const admin_boudnary_layer_title = ['Kabupaten', 'Kecamatan', 'Desa'];
-
-// SAR Points renderer
-export const view_minScale = 80000;
-export const view_minScale_zoom = 7500;
-export const view_maxScale = 0;
-
-// Hot Spot renderer
-export const values_hotspot = [-3, -2, -1, 0, 1, 2, 3];
-export const color_hotspot = [
-  '#D62F27',
-  '#ED7551',
-  '#FAB984',
-  [0, 0, 0, 0], //'#9C9C9C', // Not Significant
-  '#C0CCBE',
-  '#849EBA',
-  '#4575B5',
-];
-
-export const label_hotspot = [
-  'Downward with 99% Confidence', // significant land subsidence
-  'Downward with 95% Confidence',
-  'Downward with 90% Confidence',
-  'Not Significant',
-  'Upward with 90% Confidence',
-  'Upward with 95% Confidence',
-  'Upward with 99% Confidence',
-];
 
 // Time series char filter
 export const years_dropdown = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
@@ -352,4 +329,58 @@ export const chart_types_segmented_control = [
   'Scenario3',
   'Scenario4',
   'Scenario5',
+];
+
+// Symbology Renderer
+// SAR Points renderer
+export const view_minScale = 80000;
+export const view_minScale_zoom = 7500;
+export const view_maxScale = 0;
+export const point_color = ['#d7191c', '#fdae61', '#ffffbf', '#ffffff', '#3C9BE6'];
+export const point_default_renderer = new SimpleRenderer({
+  symbol: new SimpleMarkerSymbol({
+    style: 'circle',
+    color: [0, 0, 0],
+    outline: {
+      color: [0, 0, 0, 0],
+      width: 0.5,
+    },
+    size: '6.5px',
+  }),
+  visualVariables: [
+    new ColorVariable({
+      field: latest_date_field,
+      stops: [
+        { value: -200, color: '#d7191c', label: '< -200' }, // dark red
+        { value: -120, color: '#fdae61' }, // orange
+        { value: -15, color: '#ffffbf' }, // yellow
+        { value: 0, color: '#ffffff', label: '0' },
+        { value: 80, color: '#3C9BE6', label: '> 80' },
+      ],
+    }),
+  ],
+
+  // https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-color-ramps/
+});
+
+// Hot Spot renderer
+export const values_hotspot = [-3, -2, -1, 0, 1, 2, 3];
+export const color_hotspot = [
+  '#D62F27',
+  '#ED7551',
+  '#FAB984',
+  [0, 0, 0, 0], //'#9C9C9C', // Not Significant
+  '#C0CCBE',
+  '#849EBA',
+  '#4575B5',
+];
+
+export const label_hotspot = [
+  'Downward with 99% Confidence', // significant land subsidence
+  'Downward with 95% Confidence',
+  'Downward with 90% Confidence',
+  'Not Significant',
+  'Upward with 90% Confidence',
+  'Upward with 95% Confidence',
+  'Upward with 99% Confidence',
 ];

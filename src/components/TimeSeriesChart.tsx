@@ -31,11 +31,11 @@ const TimeSeriesChart = (props: any) => {
   const chartID = 'lot-progress';
 
   useEffect(() => {
-    generateChartData(props.selectedid).then((response: any) => {
+    generateChartData(props.selectedid, props.newdates).then((response: any) => {
       setChartData(response[0]);
       setDisplMmyrValue(response[1]);
     });
-  }, [props.selectedid]);
+  }, [props.selectedid, props.newdates]);
 
   useEffect(() => {
     maybeDisposeRoot(chartID);

@@ -1,6 +1,5 @@
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer';
-import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 import { SimpleMarkerSymbol, SimpleLineSymbol } from '@arcgis/core/symbols';
 import { zoomToLayer } from './Query';
@@ -8,39 +7,10 @@ import {
   admin_boudnary_layer_title,
   color_hotspot,
   label_hotspot,
-  latest_date_field,
   values_hotspot,
   view_maxScale,
   view_minScale,
 } from './UniqueValues';
-
-export const visualVariables = [
-  new ColorVariable({
-    field: latest_date_field,
-    stops: [
-      { value: -200, color: '#d7191c', label: '< -200' },
-      { value: -120, color: '#fdae61' },
-      { value: -15, color: '#ffffbf' },
-      { value: 0, color: '#ffffff', label: '0' },
-      { value: 80, color: '#3C9BE6', label: '> 80' },
-    ],
-  }),
-];
-
-export const sar_points_renderer = new SimpleRenderer({
-  symbol: new SimpleMarkerSymbol({
-    style: 'circle',
-    color: [0, 0, 0],
-    outline: {
-      color: [0, 0, 0, 0],
-      width: 0.5,
-    },
-    size: '6.5px',
-  }),
-  visualVariables: visualVariables,
-
-  // https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-color-ramps/
-});
 
 // custom popup
 // const contentWidget = new CustomContent({
@@ -73,7 +43,7 @@ export const sar_points_layer = new FeatureLayer({
   layerId: 3,
   minScale: view_minScale,
   maxScale: view_maxScale,
-  renderer: sar_points_renderer,
+  // renderer: point_default_renderer,
   popupEnabled: false,
   title: 'Land Displacement',
 });
@@ -186,5 +156,17 @@ export const scenario_table = new FeatureLayer({
     },
   },
   outFields: ['*'],
+  popupEnabled: false,
+});
+
+// Interquartile Range value tables
+export const iqr_table = new FeatureLayer({
+  portalItem: {
+    id: 'bd1126c44f574ffbbdbdc75d855e9c40',
+    portal: {
+      url: 'https://gis.railway-sector.com/portal',
+    },
+  },
+  outFields: ['dates', 'max'],
   popupEnabled: false,
 });
