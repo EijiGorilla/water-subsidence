@@ -38,7 +38,6 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
   // export to excel
   useEffect(() => {
     if (chartData.length > 0) {
-      console.log(chartData);
       // Remove numerical date values
       const arr1 = chartData.map(
         ({ Date, observed, statusQuo, scenario2, scenario3, scenario4, scenario5 }) => ({
