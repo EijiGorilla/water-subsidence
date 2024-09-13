@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useRef, useState, useEffect } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
@@ -10,6 +11,12 @@ import {
   chart_inside_label_color_up_mmyr,
   secondary_color,
 } from '../UniqueValues';
+import '@esri/calcite-components/dist/components/calcite-button';
+import { CalciteButton } from '@esri/calcite-components-react';
+import { read, writeFileXLSX, set_cptable } from 'xlsx';
+import * as XLSX from 'xlsx';
+import { Z_BINARY } from 'zlib';
+
 // Dispose function
 function maybeDisposeRoot(divId: any) {
   am5.array.each(am5.registry.rootElements, function (root) {
@@ -27,6 +34,7 @@ const TimeSeriesChart = (props: any) => {
   const [chartData, setChartData] = useState([]);
   const [displMmyrValue, setDisplMmyrValue] = useState<any>();
   const [yearSelected, setYearSelected] = useState<any>();
+  const [exportExcel, setExportExcel] = useState<any>(false);
 
   const chartID = 'lot-progress';
 
@@ -36,6 +44,20 @@ const TimeSeriesChart = (props: any) => {
       setDisplMmyrValue(response[1]);
     });
   }, [props.selectedid, props.newdates]);
+
+  // Export to Excel
+
+  useEffect(() => {
+    if (chartData.length > 0) {
+      // Remove numerical date values
+      const arr1 = chartData.map(({ Date, value }) => ({ Date, value }));
+      const worksheet = XLSX.utils.json_to_sheet(arr1);
+      const workbook = XLSX.utils.book_new();
+      const file_name = 'Displacement_' + props.selectedid + '.xlsx';
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Displacement');
+      XLSX.writeFile(workbook, file_name);
+    }
+  }, [exportExcel]);
 
   useEffect(() => {
     maybeDisposeRoot(chartID);
@@ -228,6 +250,19 @@ const TimeSeriesChart = (props: any) => {
           marginLeft: '10px',
         }}
       >
+        <div style={{ height: 0 }}>
+          <CalciteButton
+            onClick={(event: any) => setExportExcel(exportExcel === false ? true : false)}
+            slot="trigger"
+            scale="s"
+            appearance="solid"
+            icon-start="file-excel"
+            style={{ marginLeft: '90%', marginTop: '-50px' }}
+          >
+            Export to Excel
+          </CalciteButton>
+        </div>
+
         <div
           id={chartID}
           style={{

@@ -36,14 +36,20 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
         const scenario4 = attributes.scenario4;
         const scenario5 = attributes.scenario5;
         const date = attributes.date;
+        const date_n = new Date(date);
+        const year = date_n.toLocaleString('default', { year: 'numeric' });
+        const month = date_n.toLocaleString('default', { month: '2-digit' });
+        const day = date_n.toLocaleString('default', { day: '2-digit' });
+        const date_label = `${year}-${month}-${day}`;
         return Object.assign({
+          Date: date_label,
           date: date,
-          value0: obs === null ? undefined : obs,
-          value1: scenario1, // status quo
-          value2: scenario2, // simulated scenario 2
-          value3: !scenario3 ? undefined : scenario3,
-          value4: !scenario4 ? undefined : scenario4,
-          value5: !scenario5 ? undefined : scenario5,
+          observed: obs === null ? undefined : obs,
+          statusQuo: scenario1, // status quo
+          scenario2: scenario2, // simulated scenario 2
+          scenario3: !scenario3 ? undefined : scenario3,
+          scenario4: !scenario4 ? undefined : scenario4,
+          scenario5: !scenario5 ? undefined : scenario5,
         });
       });
       return data;
@@ -66,9 +72,11 @@ export async function generateChartData(selectedid: any, newdates: any) {
         const year = dateString.substring(0, 4);
         const month = dateString.substring(4, 6);
         const day = dateString.substring(6, 8);
+        const date_label = `${year.toString()}-${month.toString()}-${day.toString()}`;
         const date_n = new Date(year, month - 1, day);
         date_n.setHours(0, 0, 0, 0);
         return Object.assign({
+          Date: date_label,
           date: date_n.getTime(), //date.replace('f', ''),
           value: stats[newdates[index]],
         });

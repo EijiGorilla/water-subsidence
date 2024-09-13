@@ -5,6 +5,10 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Responsive from '@amcharts/amcharts5/themes/Responsive';
 import { generateScenarioChartData } from '../Query';
 import { chart_div_height, chart_types_segmented_control, secondary_color } from '../UniqueValues';
+import '@esri/calcite-components/dist/components/calcite-button';
+import { CalciteButton } from '@esri/calcite-components-react';
+import * as XLSX from 'xlsx';
+
 // Dispose function
 function maybeDisposeRoot(divId: any) {
   am5.array.each(am5.registry.rootElements, function (root) {
@@ -22,6 +26,7 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
   const chartRef = useRef<unknown | any | undefined>({});
   const legendRef = useRef<unknown | any | undefined>({});
   const [chartData, setChartData] = useState([]);
+  const [exportExcel, setExportExcel] = useState<any>(false);
 
   const chartID = 'lot-progress';
   useEffect(() => {
@@ -29,6 +34,30 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
       setChartData(response);
     });
   }, [selectedarea, selectedcharttype]);
+
+  // export to excel
+  useEffect(() => {
+    if (chartData.length > 0) {
+      console.log(chartData);
+      // Remove numerical date values
+      const arr1 = chartData.map(
+        ({ Date, observed, statusQuo, scenario2, scenario3, scenario4, scenario5 }) => ({
+          Date,
+          observed,
+          statusQuo,
+          scenario2,
+          scenario3,
+          scenario4,
+          scenario5,
+        }),
+      );
+      const worksheet = XLSX.utils.json_to_sheet(arr1);
+      const workbook = XLSX.utils.book_new();
+      const file_name = 'Scenario_' + selectedarea + '.xlsx';
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Scenario');
+      XLSX.writeFile(workbook, file_name);
+    }
+  }, [exportExcel]);
 
   useEffect(() => {
     maybeDisposeRoot(chartID);
@@ -179,7 +208,7 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
         name: 'Status Quo',
         xAxis: xAxis,
         yAxis: yAxis,
-        valueYField: 'value1',
+        valueYField: 'statusQuo',
         valueXField: 'date',
         tooltip: am5.Tooltip.new(root, {
           labelText: '{valueY}',
@@ -201,7 +230,7 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
           name: 'Scenario 2',
           xAxis: xAxis,
           yAxis: yAxis,
-          valueYField: 'value2',
+          valueYField: 'scenario2',
           valueXField: 'date',
           tooltip: am5.Tooltip.new(root, {
             labelText: '{valueY}',
@@ -224,7 +253,7 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
         name: 'Observed',
         xAxis: xAxis,
         yAxis: yAxis,
-        valueYField: 'value0',
+        valueYField: 'observed',
         valueXField: 'date',
         tooltip: am5.Tooltip.new(root, {
           labelText: '{valueY}',
@@ -306,6 +335,18 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
           marginLeft: '10px',
         }}
       >
+        <div style={{ height: 0 }}>
+          <CalciteButton
+            onClick={(event: any) => setExportExcel(exportExcel === false ? true : false)}
+            slot="trigger"
+            scale="s"
+            appearance="solid"
+            icon-start="file-excel"
+            style={{ marginLeft: '90%', marginTop: '-50px' }}
+          >
+            Export to Excel
+          </CalciteButton>
+        </div>
         {/* Add label when the chart is empty */}
         {chartData.length <= 1 && (
           <span
