@@ -4,7 +4,7 @@ import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Responsive from '@amcharts/amcharts5/themes/Responsive';
-import { generateChartData } from '../Query';
+import { generateChartData, getReferencePointValueForSubtraction } from '../Query';
 import {
   chart_div_height,
   chart_inside_label_color_down_mmyr,
@@ -35,18 +35,29 @@ const TimeSeriesChart = (props: any) => {
   const [displMmyrValue, setDisplMmyrValue] = useState<any>();
   const [yearSelected, setYearSelected] = useState<any>();
   const [exportExcel, setExportExcel] = useState<any>(false);
+  const [referencePointData, setReferencePointData] = useState<any>();
 
   const chartID = 'lot-progress';
 
+  // Get reference point values for subtraction
   useEffect(() => {
-    generateChartData(props.selectedid, props.newdates).then((response: any) => {
-      setChartData(response[0]);
-      setDisplMmyrValue(response[1]);
+    getReferencePointValueForSubtraction().then((response: any) => {
+      setReferencePointData(response);
     });
+  }, []);
+
+  useEffect(() => {
+    if (referencePointData) {
+      generateChartData(props.selectedid, props.newdates, referencePointData).then(
+        (response: any) => {
+          setChartData(response[0]);
+          setDisplMmyrValue(response[1]);
+        },
+      );
+    }
   }, [props.selectedid, props.newdates]);
 
   // Export to Excel
-
   useEffect(() => {
     if (chartData.length > 0) {
       // Remove numerical date values

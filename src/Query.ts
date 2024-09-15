@@ -1,7 +1,7 @@
 import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
 import { iqr_table, sar_points_layer, scenario_table } from './layers';
 import { view } from './Scene';
-import { date_sar_suffix, point_chart_y_variable, point_color } from './UniqueValues';
+import { date_sar_suffix, dates_sar, point_chart_y_variable, point_color } from './UniqueValues';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
 
@@ -61,7 +61,30 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
 }
 
 // Create data for time-series chart when a specific id is selected
-export async function generateChartData(selectedid: any, newdates: any) {
+// reference point values to extract from to account for displacement unrelated to subsidence.
+export async function getReferencePointValueForSubtraction() {
+  const ref_point_id = 1988268;
+  const query = sar_points_layer.createQuery();
+  query.where = 'objectid = ' + ref_point_id;
+  return sar_points_layer.queryFeatures(query).then((results: any) => {
+    var stats = results.features[0].attributes;
+    const ref_data = dates_sar.map((date: any, index: any) => {
+      const dateString = date.replace(date_sar_suffix, '');
+      const year = dateString.substring(0, 4);
+      const month = dateString.substring(4, 6);
+      const day = dateString.substring(6, 8);
+      const date_n = new Date(year, month - 1, day);
+      date_n.setHours(0, 0, 0, 0);
+      return Object.assign({
+        date: date_n.getTime(),
+        value: stats[date],
+      });
+    });
+    return ref_data;
+  });
+}
+
+export async function generateChartData(selectedid: any, newdates: any, refData: any) {
   if (selectedid) {
     const query = sar_points_layer.createQuery();
     query.where = 'objectid = ' + selectedid;
@@ -75,10 +98,17 @@ export async function generateChartData(selectedid: any, newdates: any) {
         const date_label = `${year.toString()}-${month.toString()}-${day.toString()}`;
         const date_n = new Date(year, month - 1, day);
         date_n.setHours(0, 0, 0, 0);
+
+        // get reference point data
+        const find = refData.filter((elem: any) => elem.date === date_n.getTime());
+        const ref_value = find[0].value;
+
+        //
         return Object.assign({
           Date: date_label,
           date: date_n.getTime(), //date.replace('f', ''),
-          value: stats[newdates[index]],
+          // value: stats[newdates[index]],
+          value: stats[newdates[index]] - ref_value, // subtract to account for displacement unrelated to subsidence
         });
       });
       const displ_mmyr = stats[point_chart_y_variable];
