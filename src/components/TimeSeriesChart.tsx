@@ -64,7 +64,7 @@ const TimeSeriesChart = (props: any) => {
       const workbook = XLSX.utils.book_new();
       const file_name = 'Displacement_' + props.selectedid + '.xlsx';
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Displacement');
-      // XLSX.writeFile(workbook, file_name);
+      XLSX.writeFile(workbook, file_name);
     }
   }, [exportExcel]);
 

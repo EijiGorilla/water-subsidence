@@ -54,7 +54,7 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
       const workbook = XLSX.utils.book_new();
       const file_name = 'Scenario_' + selectedarea + '.xlsx';
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Scenario');
-      // XLSX.writeFile(workbook, file_name);
+      XLSX.writeFile(workbook, file_name);
     }
   }, [exportExcel]);
 
