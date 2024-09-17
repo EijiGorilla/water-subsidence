@@ -25,7 +25,6 @@ import '@esri/calcite-components/dist/components/calcite-segmented-control';
 import '@esri/calcite-components/dist/components/calcite-segmented-control-item';
 import '@esri/calcite-components/dist/calcite/calcite.css';
 import {
-  CalciteAlert,
   CalciteShell,
   CalciteShellPanel,
   CalciteActionBar,
@@ -58,6 +57,7 @@ import {
 import ScenarioChart from './components/ScenarioChart';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { updateRendererForSymbology } from './Query';
+import MinxMaxRecord from './components/MinMaxRecord';
 
 function App() {
   const [asOfDate, setAsOfDate] = useState<undefined | any | unknown>(null);
@@ -271,28 +271,6 @@ function App() {
     }
   }, []);
 
-  // Style CSS
-  const customstyles = {
-    option: (styles: any, { data, isDisabled, isFocused, isSelected }: any) => {
-      // const color = chroma(data.color);
-      return {
-        ...styles,
-        backgroundColor: isFocused ? '#999999' : isSelected ? '#2b2b2b' : '#2b2b2b',
-        color: '#ffffff',
-      };
-    },
-
-    control: (defaultStyles: any) => ({
-      ...defaultStyles,
-      backgroundColor: '#2b2b2b',
-      borderColor: '#949494',
-      height: 35,
-      width: '170px',
-      color: '#ffffff',
-    }),
-    singleValue: (defaultStyles: any) => ({ ...defaultStyles, color: '#fff' }),
-  };
-
   return (
     <div>
       <CalciteShell>
@@ -470,6 +448,9 @@ function App() {
                   );
                 })}
             </CalciteSegmentedControl>
+
+            {/* Minimum and Maximum points */}
+            <MinxMaxRecord newdates={newDatesForChart} endyear={endYear} />
 
             {/* Administrative Boundary */}
             {/* <div style={{ color: secondary_color, margin: '7px' }}>

@@ -1,9 +1,18 @@
 import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
 import { iqr_table, sar_points_layer, scenario_table } from './layers';
 import { view } from './Scene';
-import { date_sar_suffix, dates_sar, point_chart_y_variable, point_color } from './UniqueValues';
+import {
+  date_sar_suffix,
+  dates_sar,
+  point_chart_y_variable,
+  point_color,
+  ref_point_id,
+} from './UniqueValues';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+import StatisticDefinition from '@arcgis/core/rest/support/StatisticDefinition';
+import Query from '@arcgis/core/rest/support/Query';
+import FeatureFilter from '@arcgis/core/layers/support/FeatureFilter';
 
 //
 //
@@ -63,7 +72,6 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
 // Create data for time-series chart when a specific id is selected
 // reference point values to extract from to account for displacement unrelated to subsidence.
 export async function getReferencePointValueForSubtraction() {
-  const ref_point_id = 1988268;
   const query = sar_points_layer.createQuery();
   query.where = 'objectid = ' + ref_point_id;
   return sar_points_layer.queryFeatures(query).then((results: any) => {
@@ -167,6 +175,69 @@ export async function updateRendererForSymbology(last_date: any) {
   return new_point_renderer;
 }
 
+// Get minimum and maximum records and zoom
+export async function getMinMaxRecords(newdates: any) {
+  // Regardless of start years, min and max records are extracted from the end year.
+  // So query based on the end year only.
+  const end_year_date = newdates[newdates.length - 1];
+  // console.log(newdates[newdates.length - 1]);
+  const query = sar_points_layer.createQuery();
+
+  var min_value = new StatisticDefinition({
+    onStatisticField: end_year_date,
+    outStatisticFieldName: 'min_value',
+    statisticType: 'min',
+  });
+
+  var max_value = new StatisticDefinition({
+    onStatisticField: end_year_date,
+    outStatisticFieldName: 'max_value',
+    statisticType: 'max',
+  });
+
+  query.outFields = [end_year_date, 'objectid'];
+  query.outStatistics = [min_value, max_value];
+
+  return sar_points_layer.queryFeatures(query).then((results: any) => {
+    var stats = results.features[0].attributes;
+    return stats;
+  });
+}
+
+export function zoomToMinMaxRecord(value: any, end_year_date: any) {
+  let highlightSelect: any;
+  var query = sar_points_layer.createQuery();
+  query.outFields = [end_year_date, 'objectid'];
+  query.where = `${end_year_date} = ` + value;
+  view.whenLayerView(sar_points_layer).then((layerView: any) => {
+    sar_points_layer.queryFeatures(query).then((results: any) => {
+      const objectID = results.features[0].attributes.objectid;
+      var queryExt = new Query({
+        objectIds: [objectID],
+      });
+      sar_points_layer.queryExtent(queryExt).then((result: any) => {
+        result.extent &&
+          view.goTo({
+            target: result.extent,
+            speedFactor: 2,
+            zoom: 17,
+          });
+      });
+
+      if (highlightSelect) {
+        highlightSelect.remove();
+      }
+      highlightSelect = layerView.highlight([objectID]);
+      view.on('click', function () {
+        layerView.filter = new FeatureFilter({
+          where: undefined,
+        });
+        highlightSelect.remove();
+      });
+    });
+  });
+}
+
 export function zoomToLayer(layer: any) {
   return layer.queryExtent().then((response: any) => {
     view
@@ -180,4 +251,13 @@ export function zoomToLayer(layer: any) {
         }
       });
   });
+}
+
+// Thousand separators function
+export function thousands_separators(num: any) {
+  if (num) {
+    var num_parts = num.toString().split('.');
+    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return num_parts.join('.');
+  }
 }

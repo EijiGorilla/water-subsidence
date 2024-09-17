@@ -15,7 +15,6 @@ import '@esri/calcite-components/dist/components/calcite-button';
 import { CalciteButton } from '@esri/calcite-components-react';
 import { read, writeFileXLSX, set_cptable } from 'xlsx';
 import * as XLSX from 'xlsx';
-import { Z_BINARY } from 'zlib';
 
 // Dispose function
 function maybeDisposeRoot(divId: any) {
@@ -33,7 +32,6 @@ const TimeSeriesChart = (props: any) => {
   const chartRef = useRef<unknown | any | undefined>({});
   const [chartData, setChartData] = useState([]);
   const [displMmyrValue, setDisplMmyrValue] = useState<any>();
-  const [yearSelected, setYearSelected] = useState<any>();
   const [exportExcel, setExportExcel] = useState<any>(false);
   const [referencePointData, setReferencePointData] = useState<any>();
 
@@ -66,7 +64,7 @@ const TimeSeriesChart = (props: any) => {
       const workbook = XLSX.utils.book_new();
       const file_name = 'Displacement_' + props.selectedid + '.xlsx';
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Displacement');
-      XLSX.writeFile(workbook, file_name);
+      // XLSX.writeFile(workbook, file_name);
     }
   }, [exportExcel]);
 

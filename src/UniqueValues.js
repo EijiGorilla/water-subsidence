@@ -384,3 +384,6 @@ export const label_hotspot = [
   'Upward with 95% Confidence',
   'Upward with 99% Confidence',
 ];
+
+// Minimum and maximum record
+export const ref_point_id = 1988268;
