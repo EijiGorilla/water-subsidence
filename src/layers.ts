@@ -93,20 +93,6 @@ hot_spot_layer.listMode = 'hide';
 // hot_spot_layer.popupTemplate = templatePopup;
 
 // Administrative Boundary
-var admin_line_renderer = new SimpleRenderer({
-  symbol: new SimpleLineSymbol({
-    color: '#000000',
-    width: '2.5px',
-  }),
-});
-
-var admin_line_Kecamatan_renderer = new SimpleRenderer({
-  symbol: new SimpleLineSymbol({
-    color: '#ffff00ff',
-    width: '2.5px',
-  }),
-});
-
 export const admin_boundary_kabupaten = new FeatureLayer({
   portalItem: {
     id: 'f267cd68e2ce4c0b9d38e1b401d8b320',

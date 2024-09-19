@@ -53,6 +53,7 @@ import {
   chart_panel_height_default,
   years_dropdown,
   dates_sar,
+  object_id,
 } from './UniqueValues';
 import ScenarioChart from './components/ScenarioChart';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
@@ -167,7 +168,7 @@ function App() {
             layer_title === admin_boudnary_layer_title[0] ||
             layer_title === admin_boudnary_layer_title[1]
               ? setSelectedId(null)
-              : setSelectedId(result.graphic.attributes.objectid);
+              : setSelectedId(result.graphic.attributes[object_id]);
 
             // For Scenario filtering and Chart
             !result
@@ -178,7 +179,7 @@ function App() {
 
             //// this is for only highlighting Kabupaten boundary when clicked
             result && layer_title === admin_boudnary_layer_title[0]
-              ? setSelectedIdKabupaten(result.graphic.attributes.objectid)
+              ? setSelectedIdKabupaten(result.graphic.attributes[object_id])
               : console.log('failed');
           });
         });

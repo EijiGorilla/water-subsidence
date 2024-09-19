@@ -387,3 +387,6 @@ export const label_hotspot = [
 
 // Minimum and maximum record
 export const ref_point_id = 1988268;
+
+// object id field
+export const object_id = 'objectid';

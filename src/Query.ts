@@ -4,6 +4,7 @@ import { view } from './Scene';
 import {
   date_sar_suffix,
   dates_sar,
+  object_id,
   point_chart_y_variable,
   point_color,
   ref_point_id,
@@ -73,7 +74,7 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
 // reference point values to extract from to account for displacement unrelated to subsidence.
 export async function getReferencePointValueForSubtraction() {
   const query = sar_points_layer.createQuery();
-  query.where = 'objectid = ' + ref_point_id;
+  query.where = `${object_id} = ` + ref_point_id;
   return sar_points_layer.queryFeatures(query).then((results: any) => {
     var stats = results.features[0].attributes;
     const ref_data = dates_sar.map((date: any, index: any) => {
@@ -95,7 +96,7 @@ export async function getReferencePointValueForSubtraction() {
 export async function generateChartData(selectedid: any, newdates: any, refData: any) {
   if (selectedid) {
     const query = sar_points_layer.createQuery();
-    query.where = 'objectid = ' + selectedid;
+    query.where = `${object_id} = ` + selectedid;
     return sar_points_layer.queryFeatures(query).then((results: any) => {
       var stats = results.features[0].attributes;
       const map = newdates.map((date: any, index: any) => {
@@ -195,7 +196,7 @@ export async function getMinMaxRecords(newdates: any) {
     statisticType: 'max',
   });
 
-  query.outFields = [end_year_date, 'objectid'];
+  query.outFields = [end_year_date, object_id];
   query.outStatistics = [min_value, max_value];
 
   return sar_points_layer.queryFeatures(query).then((results: any) => {
@@ -207,11 +208,11 @@ export async function getMinMaxRecords(newdates: any) {
 export function zoomToMinMaxRecord(value: any, end_year_date: any) {
   let highlightSelect: any;
   var query = sar_points_layer.createQuery();
-  query.outFields = [end_year_date, 'objectid'];
+  query.outFields = [end_year_date, object_id];
   query.where = `${end_year_date} = ` + value;
   view.whenLayerView(sar_points_layer).then((layerView: any) => {
     sar_points_layer.queryFeatures(query).then((results: any) => {
-      const objectID = results.features[0].attributes.objectid;
+      const objectID = results.features[0].attributes[object_id];
       var queryExt = new Query({
         objectIds: [objectID],
       });
