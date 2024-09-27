@@ -19,56 +19,35 @@ const MinxMaxRecord = (props: any) => {
   const [referencePointData, setReferencePointData] = useState<any>();
   const [minRecord, setMinRecord] = useState<any>();
   const [maxRecord, setMaxRecord] = useState<any>();
-  const [originalMinRecord, setOriginalMinRecord] = useState<any>();
-  const [originalMaxRecord, setOriginalMaxRecord] = useState<any>();
+  const [minRecordNumber, setMinRecordNumber] = useState<any>();
+  const [maxRecordNumber, setMaxsRecordNumber] = useState<any>();
   const [zoomClickMin, setZoomClickMin] = useState<boolean>(false);
   const [zoomClickMax, setZoomClickMax] = useState<boolean>(false);
   const [newEndYearDate, setNewEndYearDate] = useState<any>();
 
-  // Get reference point values for subtraction
   useEffect(() => {
-    getReferencePointValueForSubtraction().then((response: any) => {
-      setReferencePointData(response);
+    // New end-year date for filter
+    setNewEndYearDate(props.newdates[props.newdates.length - 1]);
+    // Excecute functions
+    getMinMaxRecords(props.newdates).then((response: any) => {
+      setMinRecordNumber(response.min_value);
+      setMaxsRecordNumber(response.max_value);
+      const minimum = thousands_separators(response.min_value.toFixed(2));
+      const maximum = thousands_separators(response.max_value.toFixed(2));
+      setMinRecord(minimum);
+      setMaxRecord(maximum);
     });
-  }, []);
+  }, [props.newdates]);
 
   useEffect(() => {
-    if (referencePointData) {
-      // Update a reference point value with new end-year-date
-      const dateString = props.newdates[props.newdates.length - 1].replace(date_sar_suffix, '');
-      const year = dateString.substring(0, 4);
-      const month = dateString.substring(4, 6);
-      const day = dateString.substring(6, 8);
-      const date_n = new Date(year, month - 1, day);
-      date_n.setHours(0, 0, 0, 0);
-      const ref_new_date = date_n.getTime();
-      const find = referencePointData.filter((elem: any) => elem.date === ref_new_date);
-      const ref_value = find[0].value;
-
-      // New end-year date for filter
-      setNewEndYearDate(props.newdates[props.newdates.length - 1]);
-      // Excecute functions
-      getMinMaxRecords(props.newdates).then((response: any) => {
-        setOriginalMinRecord(response.min_value);
-        setOriginalMaxRecord(response.max_value);
-        const minimum = thousands_separators((response.min_value - ref_value).toFixed(2));
-        const maximum = thousands_separators((response.max_value - ref_value).toFixed(2));
-        setMinRecord(minimum);
-        setMaxRecord(maximum);
-      });
-    }
-  }, [referencePointData, props.newdates]);
-
-  useEffect(() => {
-    if (referencePointData) {
-      zoomToMinMaxRecord(originalMinRecord, newEndYearDate);
+    if (minRecord) {
+      zoomToMinMaxRecord(minRecordNumber, newEndYearDate);
     }
   }, [zoomClickMin]);
 
   useEffect(() => {
-    if (referencePointData) {
-      console.log(zoomClickMax);
-      zoomToMinMaxRecord(originalMaxRecord, newEndYearDate);
+    if (maxRecord) {
+      zoomToMinMaxRecord(maxRecordNumber, newEndYearDate);
     }
   }, [zoomClickMax]);
 

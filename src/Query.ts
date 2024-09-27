@@ -93,7 +93,7 @@ export async function getReferencePointValueForSubtraction() {
   });
 }
 
-export async function generateChartData(selectedid: any, newdates: any, refData: any) {
+export async function generateChartData(selectedid: any, newdates: any) {
   if (selectedid) {
     const query = sar_points_layer.createQuery();
     query.where = `${object_id} = ` + selectedid;
@@ -108,16 +108,10 @@ export async function generateChartData(selectedid: any, newdates: any, refData:
         const date_n = new Date(year, month - 1, day);
         date_n.setHours(0, 0, 0, 0);
 
-        // get reference point data
-        const find = refData.filter((elem: any) => elem.date === date_n.getTime());
-        const ref_value = find[0].value;
-
-        //
         return Object.assign({
           Date: date_label,
           date: date_n.getTime(), //date.replace('f', ''),
-          // value: stats[newdates[index]],
-          value: stats[newdates[index]] - ref_value, // subtract to account for displacement unrelated to subsidence
+          value: stats[newdates[index]],
         });
       });
       const displ_mmyr = stats[point_chart_y_variable];

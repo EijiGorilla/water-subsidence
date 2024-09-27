@@ -33,26 +33,13 @@ const TimeSeriesChart = (props: any) => {
   const [chartData, setChartData] = useState([]);
   const [displMmyrValue, setDisplMmyrValue] = useState<any>();
   const [exportExcel, setExportExcel] = useState<any>(false);
-  const [referencePointData, setReferencePointData] = useState<any>();
-
   const chartID = 'lot-progress';
 
-  // Get reference point values for subtraction
   useEffect(() => {
-    getReferencePointValueForSubtraction().then((response: any) => {
-      setReferencePointData(response);
+    generateChartData(props.selectedid, props.newdates).then((response: any) => {
+      setChartData(response[0]);
+      setDisplMmyrValue(response[1]);
     });
-  }, []);
-
-  useEffect(() => {
-    if (referencePointData) {
-      generateChartData(props.selectedid, props.newdates, referencePointData).then(
-        (response: any) => {
-          setChartData(response[0]);
-          setDisplMmyrValue(response[1]);
-        },
-      );
-    }
   }, [props.selectedid, props.newdates]);
 
   // Export to Excel
