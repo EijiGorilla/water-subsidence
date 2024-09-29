@@ -7,7 +7,6 @@ import {
   object_id,
   point_chart_y_variable,
   point_color,
-  ref_point_id,
 } from './UniqueValues';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
@@ -70,29 +69,6 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
   }
 }
 
-// Create data for time-series chart when a specific id is selected
-// reference point values to extract from to account for displacement unrelated to subsidence.
-export async function getReferencePointValueForSubtraction() {
-  const query = sar_points_layer.createQuery();
-  query.where = `${object_id} = ` + ref_point_id;
-  return sar_points_layer.queryFeatures(query).then((results: any) => {
-    var stats = results.features[0].attributes;
-    const ref_data = dates_sar.map((date: any, index: any) => {
-      const dateString = date.replace(date_sar_suffix, '');
-      const year = dateString.substring(0, 4);
-      const month = dateString.substring(4, 6);
-      const day = dateString.substring(6, 8);
-      const date_n = new Date(year, month - 1, day);
-      date_n.setHours(0, 0, 0, 0);
-      return Object.assign({
-        date: date_n.getTime(),
-        value: stats[date],
-      });
-    });
-    return ref_data;
-  });
-}
-
 export async function generateChartData(selectedid: any, newdates: any) {
   if (selectedid) {
     const query = sar_points_layer.createQuery();
@@ -124,8 +100,10 @@ export async function generateChartData(selectedid: any, newdates: any) {
 }
 
 export async function updateRendererForSymbology(last_date: any) {
+  // fix the suffix of date. if 'x' === 'X', else 'X'.
+  const last_date_fixed = last_date.replace(date_sar_suffix, 'X');
   const query = iqr_table.createQuery();
-  query.where = "dates = '" + last_date + "'";
+  query.where = "dates = '" + last_date_fixed + "'";
   query.outFields = ['dates', 'max', 'q1', 'min'];
   const response = await iqr_table.queryFeatures(query);
   var attributes = response.features[0].attributes;
@@ -201,6 +179,7 @@ export async function getMinMaxRecords(newdates: any) {
 
 export function zoomToMinMaxRecord(value: any, end_year_date: any) {
   let highlightSelect: any;
+  const id_field = 'id';
   var query = sar_points_layer.createQuery();
   query.outFields = [end_year_date, object_id];
   query.where = `${end_year_date} = ` + value;

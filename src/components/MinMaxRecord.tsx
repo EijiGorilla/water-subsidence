@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 import '@esri/calcite-components/dist/components/calcite-button';
 import { CalciteButton } from '@esri/calcite-components-react';
-import {
-  getMinMaxRecords,
-  getReferencePointValueForSubtraction,
-  thousands_separators,
-  zoomToMinMaxRecord,
-} from '../Query';
+import { getMinMaxRecords, thousands_separators, zoomToMinMaxRecord } from '../Query';
 import {
   date_sar_suffix,
   margin_bottom_title_item,
@@ -16,7 +11,6 @@ import {
 
 // Minimum and maximum records are obtained from the latest date
 const MinxMaxRecord = (props: any) => {
-  const [referencePointData, setReferencePointData] = useState<any>();
   const [minRecord, setMinRecord] = useState<any>();
   const [maxRecord, setMaxRecord] = useState<any>();
   const [minRecordNumber, setMinRecordNumber] = useState<any>();

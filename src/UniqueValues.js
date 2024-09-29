@@ -376,17 +376,17 @@ export const color_hotspot = [
 ];
 
 export const label_hotspot = [
-  'Downward with 99% Confidence', // significant land subsidence
-  'Downward with 95% Confidence',
-  'Downward with 90% Confidence',
+  'Hot Spot with 99% Confidence', // significant land subsidence
+  'Hot Spot with 95% Confidence',
+  'Hot Spot with 90% Confidence',
   'Not Significant',
-  'Upward with 90% Confidence',
-  'Upward with 95% Confidence',
-  'Upward with 99% Confidence',
+  'Cold Spot with 90% Confidence',
+  'Cold Spot with 95% Confidence',
+  'Cold Spot with 99% Confidence',
 ];
 
 // Minimum and maximum record
-export const ref_point_id = 1988268;
+// export const ref_point_objectid = 1988268;
 
 // object id field
 export const object_id = 'objectid';

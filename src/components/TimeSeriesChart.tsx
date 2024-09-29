@@ -4,7 +4,7 @@ import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Responsive from '@amcharts/amcharts5/themes/Responsive';
-import { generateChartData, getReferencePointValueForSubtraction } from '../Query';
+import { generateChartData } from '../Query';
 import {
   chart_div_height,
   chart_inside_label_color_down_mmyr,
