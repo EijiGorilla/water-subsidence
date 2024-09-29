@@ -13,6 +13,7 @@ import {
   admin_boundary_kecamatan,
   admin_boundary_desa,
 } from './layers';
+import { object_id } from './UniqueValues';
 
 export const map = new Map({
   basemap: 'satellite', // "streets-night-vector", basemap, hybrid
@@ -104,10 +105,10 @@ export const layerList = new LayerList({
 const sources = [
   {
     layer: sar_points_layer,
-    searchFields: ['id'],
-    displayField: 'id',
+    searchFields: [object_id],
+    displayField: object_id,
     exactMatch: false,
-    outFields: ['id'],
+    outFields: [object_id],
     name: 'ID',
     placeholder: 'ID',
   },
