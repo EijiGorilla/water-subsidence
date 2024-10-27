@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/water-subsidence/static/css/main.96ff0608.css",
+    "main.css": "/water-subsidence/static/css/main.5b4637e4.css",
     "main.js": "/water-subsidence/static/js/main.d2e4e71c.js",
     "static/js/2475.246f4cfc.chunk.js": "/water-subsidence/static/js/2475.246f4cfc.chunk.js",
     "static/js/9368.d6f0da98.chunk.js": "/water-subsidence/static/js/9368.d6f0da98.chunk.js",
@@ -335,7 +335,7 @@
     "index.html": "/water-subsidence/index.html",
     "static/media/SM-Slider_TrackBackground_hover.svg": "/water-subsidence/static/media/SM-Slider_TrackBackground_hover.5dcf34ac7d59f98735ad.svg",
     "static/media/SM-Slider_TrackBackground_idle.svg": "/water-subsidence/static/media/SM-Slider_TrackBackground_idle.cc7bd7014a003ba1844f.svg",
-    "main.96ff0608.css.map": "/water-subsidence/static/css/main.96ff0608.css.map",
+    "main.5b4637e4.css.map": "/water-subsidence/static/css/main.5b4637e4.css.map",
     "main.d2e4e71c.js.map": "/water-subsidence/static/js/main.d2e4e71c.js.map",
     "2475.246f4cfc.chunk.js.map": "/water-subsidence/static/js/2475.246f4cfc.chunk.js.map",
     "9368.d6f0da98.chunk.js.map": "/water-subsidence/static/js/9368.d6f0da98.chunk.js.map",
@@ -604,7 +604,7 @@
     "1074.18c29be0.chunk.js.map": "/water-subsidence/static/js/1074.18c29be0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.96ff0608.css",
+    "static/css/main.5b4637e4.css",
     "static/js/main.d2e4e71c.js"
   ]
 }
