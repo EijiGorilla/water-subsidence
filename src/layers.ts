@@ -1,7 +1,7 @@
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
-import { SimpleMarkerSymbol, SimpleLineSymbol } from '@arcgis/core/symbols';
+import { SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol } from '@arcgis/core/symbols';
 import { zoomToLayer } from './Query';
 import {
   admin_boudnary_layer_title,
@@ -93,6 +93,17 @@ hot_spot_layer.listMode = 'hide';
 // hot_spot_layer.popupTemplate = templatePopup;
 
 // Administrative Boundary
+// 1. Kabupaten
+const kabupaten_line_renderer = new SimpleRenderer({
+  symbol: new SimpleFillSymbol({
+    color: [0, 0, 0, 0],
+    outline: {
+      color: 'black',
+      width: 2,
+    },
+  }),
+});
+
 export const admin_boundary_kabupaten = new FeatureLayer({
   portalItem: {
     id: 'f267cd68e2ce4c0b9d38e1b401d8b320',
@@ -102,10 +113,22 @@ export const admin_boundary_kabupaten = new FeatureLayer({
   },
   layerId: 0,
   outFields: ['namobj'],
+  // renderer: kabupaten_line_renderer,
   // When renderer is defined, it does not get highlighted. why?
   // renderer: admin_line_renderer,
   popupEnabled: false,
   title: admin_boudnary_layer_title[0],
+});
+
+// 2. Kecamatan
+const kecamatan_line_renderer = new SimpleRenderer({
+  symbol: new SimpleFillSymbol({
+    color: [0, 0, 0, 0],
+    outline: {
+      color: '#fff5e6ff',
+      width: 2,
+    },
+  }),
 });
 
 export const admin_boundary_kecamatan = new FeatureLayer({
@@ -117,8 +140,19 @@ export const admin_boundary_kecamatan = new FeatureLayer({
   },
   layerId: 1,
   popupEnabled: false,
-  // renderer: admin_line_renderer,
+  renderer: kecamatan_line_renderer,
   title: admin_boudnary_layer_title[1],
+});
+
+// 3. Desa
+const desa_line_renderer = new SimpleRenderer({
+  symbol: new SimpleFillSymbol({
+    color: [0, 0, 0, 0],
+    outline: {
+      color: '#d69253ff',
+      width: 1.7,
+    },
+  }),
 });
 
 export const admin_boundary_desa = new FeatureLayer({
@@ -130,6 +164,7 @@ export const admin_boundary_desa = new FeatureLayer({
   },
   layerId: 2,
   popupEnabled: false,
+  renderer: desa_line_renderer,
   title: admin_boudnary_layer_title[2],
 });
 
