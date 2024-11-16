@@ -1,5 +1,10 @@
 import ColorVariable from '@arcgis/core/renderers/visualVariables/ColorVariable';
 import { iqr_table, sar_points_layer, scenario_table } from './layers';
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+import StatisticDefinition from '@arcgis/core/rest/support/StatisticDefinition';
+import Query from '@arcgis/core/rest/support/Query';
+import FeatureFilter from '@arcgis/core/layers/support/FeatureFilter';
 import { view } from './Scene';
 import {
   date_sar_suffix,
@@ -7,26 +12,22 @@ import {
   object_id,
   point_chart_y_variable,
   point_color,
+  // ref_point_id,
 } from './UniqueValues';
-import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
-import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
-import StatisticDefinition from '@arcgis/core/rest/support/StatisticDefinition';
-import Query from '@arcgis/core/rest/support/Query';
-import FeatureFilter from '@arcgis/core/layers/support/FeatureFilter';
 
 //
 //
-const field_names: any = [];
-export async function getFieldNames() {
-  if (sar_points_layer.loadStatus === 'loaded') {
-    const nlengths = sar_points_layer.fields.length;
+// const field_names: any = [];
+// export async function getFieldNames() {
+//   if (sar_points_layer.loadStatus === 'loaded') {
+//     const nlengths = sar_points_layer.fields.length;
 
-    for (let i = 0; i < nlengths; i++) {
-      field_names.push(sar_points_layer.fields[i].name);
-    }
-  }
-  return field_names;
-}
+//     for (let i = 0; i < nlengths; i++) {
+//       field_names.push(sar_points_layer.fields[i].name);
+//     }
+//   }
+//   return field_names;
+// }
 
 // create data for scenario chart
 export async function generateScenarioChartData(selectedarea: any, selectedcharttype: any) {
@@ -69,7 +70,38 @@ export async function generateScenarioChartData(selectedarea: any, selectedchart
   }
 }
 
-export async function generateChartData(selectedid: any, newdates: any) {
+// Create data for time-series chart when a specific id is selected
+// reference point values to extract from to account for displacement unrelated to subsidence.
+export async function getReferencePointValueForSubtraction(ref_point_id: any) {
+  const query = sar_points_layer.createQuery();
+  if (ref_point_id) {
+    query.where = `${object_id} = ` + ref_point_id;
+  } else {
+    query.where = '1=1';
+  }
+
+  return sar_points_layer.queryFeatures(query).then((results: any) => {
+    // when ref_point_id entered does not exist, do nothing.
+    if (results.features[0]) {
+      var stats = results.features[0].attributes;
+      const ref_data = dates_sar.map((date: any, index: any) => {
+        const dateString = date.replace(date_sar_suffix, '');
+        const year = dateString.substring(0, 4);
+        const month = dateString.substring(4, 6);
+        const day = dateString.substring(6, 8);
+        const date_n = new Date(year, month - 1, day);
+        date_n.setHours(0, 0, 0, 0);
+        return Object.assign({
+          date: date_n.getTime(),
+          value: stats[date],
+        });
+      });
+      return ref_data;
+    }
+  });
+}
+
+export async function generateChartData(selectedid: any, newdates: any, refData: any) {
   if (selectedid) {
     const query = sar_points_layer.createQuery();
     query.where = `${object_id} = ` + selectedid;
@@ -84,10 +116,16 @@ export async function generateChartData(selectedid: any, newdates: any) {
         const date_n = new Date(year, month - 1, day);
         date_n.setHours(0, 0, 0, 0);
 
+        // get reference point data
+        const find = refData.filter((elem: any) => elem.date === date_n.getTime());
+        const ref_value = find[0].value;
+
+        //
         return Object.assign({
           Date: date_label,
           date: date_n.getTime(), //date.replace('f', ''),
-          value: stats[newdates[index]],
+          // value: stats[newdates[index]],
+          value: stats[newdates[index]] - ref_value, // subtract to account for displacement unrelated to subsidence
         });
       });
       const displ_mmyr = stats[point_chart_y_variable];
@@ -100,10 +138,9 @@ export async function generateChartData(selectedid: any, newdates: any) {
 }
 
 export async function updateRendererForSymbology(last_date: any) {
-  // fix the suffix of date. if 'x' === 'X', else 'X'.
-  const last_date_fixed = last_date.replace(date_sar_suffix, 'X');
   const query = iqr_table.createQuery();
-  query.where = "dates = '" + last_date_fixed + "'";
+  const last_date_X = last_date.replace('x', 'X');
+  query.where = "dates = '" + last_date_X + "'";
   query.outFields = ['dates', 'max', 'q1', 'min'];
   const response = await iqr_table.queryFeatures(query);
   var attributes = response.features[0].attributes;
@@ -125,7 +162,7 @@ export async function updateRendererForSymbology(last_date: any) {
 
   const new_visualVariable = [
     new ColorVariable({
-      field: last_date,
+      field: last_date_X,
       stops: stops,
     }),
   ];
@@ -179,7 +216,6 @@ export async function getMinMaxRecords(newdates: any) {
 
 export function zoomToMinMaxRecord(value: any, end_year_date: any) {
   let highlightSelect: any;
-  const id_field = 'id';
   var query = sar_points_layer.createQuery();
   query.outFields = [end_year_date, object_id];
   query.where = `${end_year_date} = ` + value;

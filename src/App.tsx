@@ -23,6 +23,8 @@ import '@esri/calcite-components/dist/components/calcite-action';
 import '@esri/calcite-components/dist/components/calcite-action-bar';
 import '@esri/calcite-components/dist/components/calcite-segmented-control';
 import '@esri/calcite-components/dist/components/calcite-segmented-control-item';
+import '@esri/calcite-components/dist/components/calcite-input';
+import '@esri/calcite-components/dist/components/calcite-input-number';
 import '@esri/calcite-components/dist/calcite/calcite.css';
 import {
   CalciteShell,
@@ -36,9 +38,10 @@ import {
   CalciteDropdownGroup,
   CalciteDropdownItem,
   CalciteButton,
+  CalciteInput,
+  CalciteInputNumber,
 } from '@esri/calcite-components-react';
 import { admin_boundary_kabupaten, hot_spot_layer, sar_points_layer } from './layers';
-import TimeSeriesChart from './components/TimeSeriesChart';
 import {
   visible_layer_points,
   secondary_color,
@@ -55,9 +58,10 @@ import {
   dates_sar,
   object_id,
 } from './UniqueValues';
-import ScenarioChart from './components/ScenarioChart';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { updateRendererForSymbology } from './Query';
+import TimeSeriesChart from './components/TimeSeriesChart';
+import ScenarioChart from './components/ScenarioChart';
 import MinxMaxRecord from './components/MinMaxRecord';
 
 function App() {
@@ -100,6 +104,9 @@ function App() {
   // highlighted feature
   const [highlightedFeatureLayer, setHighlightedFeatureLayer] =
     useState<FeatureLayer>(sar_points_layer);
+
+  // Enter reference point object id
+  const [referencePointEntered, setReferencePointEntered] = useState<any>();
 
   // Date Picker ---------------------------------
   useEffect(() => {
@@ -451,7 +458,33 @@ function App() {
             </CalciteSegmentedControl>
 
             {/* Minimum and Maximum points */}
-            <MinxMaxRecord newdates={newDatesForChart} endyear={endYear} />
+            <MinxMaxRecord
+              referenceid={referencePointEntered}
+              newdates={newDatesForChart}
+              endyear={endYear}
+            />
+
+            {/* Referece Point ID used to subtract */}
+            <div
+              style={{
+                fontSize: action_pane_title_font_size,
+                marginLeft: margin_left_pane_title,
+                marginRight: margin_right_pane_item,
+                marginTop: '20px',
+                marginBottom: margin_bottom_title_item,
+                color: secondary_color,
+              }}
+            >
+              Reference ID for Subtraction:
+              <CalciteInputNumber
+                placeholder="Enter a reference point ID"
+                clearable
+                step={'any'}
+                onCalciteInputNumberChange={(event: any) =>
+                  setReferencePointEntered(event.target.value)
+                }
+              ></CalciteInputNumber>
+            </div>
 
             {/* Administrative Boundary */}
             {/* <div style={{ color: secondary_color, margin: '7px' }}>
@@ -633,6 +666,7 @@ function App() {
           {chartTypeSelected === chart_types_segmented_control[0] && (
             <TimeSeriesChart
               // nextwidget={nextWidget === activeWidget ? null : nextWidget}
+              referenceid={referencePointEntered}
               selectedid={selectedId}
               newdates={newDatesForChart}
             />
