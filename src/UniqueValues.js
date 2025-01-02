@@ -69,6 +69,7 @@ export const visible_layer_subdiv = [
 export const admin_boudnary_layer_title = ['Kabupaten', 'Kecamatan', 'Desa'];
 
 // Time series char filter
+
 export const years_dropdown = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
 export const latest_date_field = 'x20231224';
 export const date_sar_suffix = 'x';

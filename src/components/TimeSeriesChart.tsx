@@ -45,14 +45,14 @@ const TimeSeriesChart = (props: any) => {
   }, [props.referenceid]);
 
   useEffect(() => {
-    if (referencePointData) {
-      generateChartData(props.selectedid, props.newdates, referencePointData).then(
-        (response: any) => {
-          setChartData(response[0]);
-          setDisplMmyrValue(response[1]);
-        },
-      );
-    }
+    // if (referencePointData) {
+    generateChartData(props.selectedid, props.newdates, referencePointData).then(
+      (response: any) => {
+        setChartData(response[0]);
+        setDisplMmyrValue(response[1]);
+      },
+    );
+    // }
   }, [props.selectedid, props.newdates]);
 
   // Export to Excel

@@ -9,24 +9,34 @@ import { view } from './Scene';
 import {
   date_sar_suffix,
   dates_sar,
+  latest_date_field,
   object_id,
   point_chart_y_variable,
   point_color,
   // ref_point_id,
 } from './UniqueValues';
 
-//
-//
-// const field_names: any = [];
-// export async function getFieldNames() {
-//   if (sar_points_layer.loadStatus === 'loaded') {
-//     const nlengths = sar_points_layer.fields.length;
+// function onlyUnique(value: any, index: any, array: any) {
+//   return array.indexOf(value) === index;
+// }
 
-//     for (let i = 0; i < nlengths; i++) {
-//       field_names.push(sar_points_layer.fields[i].name);
-//     }
-//   }
-//   return field_names;
+// export async function getFieldNamesYears() {
+//   const query = sar_points_layer.createQuery();
+//   return sar_points_layer.queryFeatures(query).then((response: any) => {
+//     const field_names: any = [];
+//     const years_list: any = [];
+//     var fields = response.fields;
+//     fields.map((field: any, index: any) => {
+//       if (field.name[0] === date_sar_suffix) {
+//         field_names.push(field.name);
+//         const year = Number(field.name.replace(date_sar_suffix, '').slice(0, 4));
+//         years_list.push(year);
+//       }
+//     });
+//     console.log(field_names);
+//     const unique_years = years_list.filter(onlyUnique);
+//     return [field_names, unique_years];
+//   });
 // }
 
 // create data for scenario chart
@@ -82,7 +92,9 @@ export async function getReferencePointValueForSubtraction(ref_point_id: any) {
 
   return sar_points_layer.queryFeatures(query).then((results: any) => {
     // when ref_point_id entered does not exist, do nothing.
-    if (results.features[0]) {
+    // when a reference point is selected,
+    // compile all values across all the date fields in an objectd array.
+    if (ref_point_id) {
       var stats = results.features[0].attributes;
       const ref_data = dates_sar.map((date: any, index: any) => {
         const dateString = date.replace(date_sar_suffix, '');
@@ -117,8 +129,8 @@ export async function generateChartData(selectedid: any, newdates: any, refData:
         date_n.setHours(0, 0, 0, 0);
 
         // get reference point data
-        const find = refData.filter((elem: any) => elem.date === date_n.getTime());
-        const ref_value = find[0].value;
+        const find = refData?.filter((elem: any) => elem.date === date_n.getTime());
+        const ref_value = find ? find[0].value : 0;
 
         //
         return Object.assign({
@@ -190,7 +202,6 @@ export async function getMinMaxRecords(newdates: any) {
   // Regardless of start years, min and max records are extracted from the end year.
   // So query based on the end year only.
   const end_year_date = newdates[newdates.length - 1];
-  // console.log(newdates[newdates.length - 1]);
   const query = sar_points_layer.createQuery();
 
   var min_value = new StatisticDefinition({
@@ -234,9 +245,7 @@ export function zoomToMinMaxRecord(value: any, end_year_date: any) {
           });
       });
 
-      if (highlightSelect) {
-        highlightSelect.remove();
-      }
+      highlightSelect && highlightSelect.remove();
       highlightSelect = layerView.highlight([objectID]);
       view.on('click', function () {
         layerView.filter = new FeatureFilter({

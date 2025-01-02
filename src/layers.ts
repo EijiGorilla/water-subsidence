@@ -1,7 +1,7 @@
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
-import { SimpleMarkerSymbol, SimpleLineSymbol } from '@arcgis/core/symbols';
+import { SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol } from '@arcgis/core/symbols';
 import {
   admin_boudnary_layer_title,
   color_hotspot,
