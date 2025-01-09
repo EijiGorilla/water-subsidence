@@ -13,7 +13,6 @@ import {
 } from '../UniqueValues';
 import '@esri/calcite-components/dist/components/calcite-button';
 import { CalciteButton } from '@esri/calcite-components-react';
-import { read, writeFileXLSX, set_cptable } from 'xlsx';
 import * as XLSX from 'xlsx';
 
 // Dispose function
@@ -257,9 +256,10 @@ const TimeSeriesChart = (props: any) => {
           // border: 'solid 1px gray',
           marginRight: '10px',
           marginLeft: '10px',
+          overflow: 'auto',
         }}
       >
-        <div style={{ height: 0 }}>
+        <div style={{ height: 0, position: 'fixed', right: 130, marginTop: '-5px' }}>
           <CalciteButton
             onClick={(event: any) => setExportExcel(exportExcel === false ? true : false)}
             slot="trigger"
@@ -302,7 +302,7 @@ const TimeSeriesChart = (props: any) => {
 
           <span
             style={{
-              position: 'absolute',
+              position: 'fixed',
               right: 50,
               marginTop: '10px',
               color:
