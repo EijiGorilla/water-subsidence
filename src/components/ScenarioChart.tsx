@@ -226,7 +226,7 @@ const ScenarioChart = ({ selectedarea, selectedcharttype }: any) => {
     if (selectedcharttype === chart_types_segmented_control[2]) {
       var series_scenario2 = chart.series.push(
         am5xy.LineSeries.new(root, {
-          name: 'Scenario 2',
+          name: '25% reduced',
           xAxis: xAxis,
           yAxis: yAxis,
           valueYField: 'scenario2',
