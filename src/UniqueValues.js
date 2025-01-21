@@ -325,11 +325,11 @@ export const chart_inside_label_color_down_mmyr = 'red';
 export const chart_inside_label_color_up_mmyr = '#0095ffff';
 export const chart_types_segmented_control = [
   'Total displ.(mm)',
-  'Scenario1 (status quo)',
-  'Scenario2',
-  'Scenario3',
-  'Scenario4',
-  'Scenario5',
+  '0% reduced',
+  '25% reduced',
+  '50% reduced',
+  '75% reduced',
+  '100% reduced',
 ];
 
 // Symbology Renderer
