@@ -2,6 +2,8 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer';
 import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 import { SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol } from '@arcgis/core/symbols';
+import esriId from '@arcgis/core/identity/IdentityManager';
+import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
 import {
   admin_boudnary_layer_title,
   color_hotspot,
@@ -10,6 +12,27 @@ import {
   view_maxScale,
   view_minScale,
 } from './UniqueValues';
+import IdentityManager from '@arcgis/core/identity/IdentityManager';
+
+// OAuth configuration
+const oauthInfo = new OAuthInfo({
+  appId: 'HONyZHclRNZwQvKu', // Replace with your app's Client ID
+  portalUrl: 'https://www.arcgis.com',
+  popupCallbackUrl: 'https://eijigorilla.github.io/water-subsidence',
+  popup: true, // Use popup for authentication
+});
+
+IdentityManager.registerOAuthInfos([oauthInfo]);
+
+// Automatically sign in the user
+IdentityManager.checkSignInStatus(oauthInfo.portalUrl)
+  .then(() => {
+    console.log('User is signed in!');
+  })
+  .catch(() => {
+    // If not signed in, initiate OAuth sign-in
+    IdentityManager.getCredential(oauthInfo.portalUrl);
+  });
 
 // custom popup
 // const contentWidget = new CustomContent({
@@ -96,14 +119,26 @@ hot_spot_layer.listMode = 'hide';
 // hot_spot_layer.popupTemplate = templatePopup;
 
 // Administrative Boundary
+// export const admin_boundary_kabupaten = new FeatureLayer({
+//   portalItem: {
+//     id: 'f267cd68e2ce4c0b9d38e1b401d8b320',
+//     portal: {
+//       url: 'https://gis.railway-sector.com/portal',
+//     },
+//   },
+//   layerId: 0,
+//   outFields: ['namobj'],
+//   // When renderer is defined, it does not get highlighted. why?
+//   // renderer: admin_line_renderer,
+//   popupEnabled: false,
+//   title: admin_boudnary_layer_title[0],
+// });
+
 export const admin_boundary_kabupaten = new FeatureLayer({
   portalItem: {
-    id: 'f267cd68e2ce4c0b9d38e1b401d8b320',
-    portal: {
-      url: 'https://gis.railway-sector.com/portal',
-    },
+    id: 'a17c4128ee3748c0aad6463bfad5ea16',
   },
-  layerId: 0,
+
   outFields: ['namobj'],
   // When renderer is defined, it does not get highlighted. why?
   // renderer: admin_line_renderer,
