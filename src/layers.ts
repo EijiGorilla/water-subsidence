@@ -21,7 +21,7 @@ const oauthInfo = new OAuthInfo({
   popupCallbackUrl: 'https://eijigorilla.github.io/water-subsidence',
   popup: true, // Use popup for authentication
 });
-
+//
 IdentityManager.registerOAuthInfos([oauthInfo]);
 
 // Automatically sign in the user
@@ -139,7 +139,6 @@ export const admin_boundary_kabupaten = new FeatureLayer({
   portalItem: {
     id: 'a17c4128ee3748c0aad6463bfad5ea16',
   },
-
   outFields: ['namobj'],
   // When renderer is defined, it does not get highlighted. why?
   // renderer: admin_line_renderer,
