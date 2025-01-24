@@ -24,7 +24,7 @@ const admin_boundary_groupLayer = new GroupLayer({
   title: 'Admin. Boundary Layers',
   visible: true,
   visibilityMode: 'independent',
-  layers: [admin_boundary_desa, admin_boundary_kecamatan, admin_boundary_kabupaten],
+  layers: [admin_boundary_desa, admin_boundary_kecamatan], // [admin_boundary_desa, admin_boundary_kecamatan, admin_boundary_kabupaten],
 });
 
 // interface Props {
@@ -56,6 +56,7 @@ export const basemaps = new BasemapGallery({
 map.add(admin_boundary_groupLayer);
 map.add(sar_points_layer);
 map.add(hot_spot_layer);
+map.add(admin_boundary_kabupaten);
 
 //-------------------------
 
