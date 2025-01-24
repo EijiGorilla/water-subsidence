@@ -16,8 +16,8 @@ import IdentityManager from '@arcgis/core/identity/IdentityManager';
 
 // OAuth configuration
 const oauthInfo = new OAuthInfo({
-  appId: 'HONyZHclRNZwQvKu', // Replace with your app's Client ID
-  portalUrl: 'https://www.arcgis.com',
+  appId: 'YZiwiNrVf4zjt2pB', //'HONyZHclRNZwQvKu', // Replace with your app's Client ID
+  portalUrl: 'https://www.arcgis.com', //'https://mmsp.maps.arcgis.com/',
   popupCallbackUrl: 'https://eijigorilla.github.io/water-subsidence',
   popup: true, // Use popup for authentication
 });
